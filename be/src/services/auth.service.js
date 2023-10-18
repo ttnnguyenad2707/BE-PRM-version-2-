@@ -10,9 +10,9 @@ class AuthService {
         const { email, password, firstname, lastname } = req.body;
         try {
 
-            const checkEmailExists = await User.find({ email: email });
-            if (!checkEmailExists) return res.status(400).json("Email has exists");
-
+            const checkEmailExists = await User.findOne({ email: email });
+            if (checkEmailExists) return res.status(400).json("Email has exists");
+            
             const salt = await bcrypt.genSalt(10);
             const hashed = await bcrypt.hash(password, salt);
 
@@ -23,7 +23,13 @@ class AuthService {
                 password: hashed,
 
             })
-            return result;
+            //  return result;
+              return res.status(200).json(
+                {
+                    message : 'Register Success !',
+                    
+                }
+              );
 
         } catch (error) {
             throw error;

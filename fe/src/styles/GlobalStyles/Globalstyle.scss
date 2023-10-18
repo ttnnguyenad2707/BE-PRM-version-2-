@@ -31,6 +31,14 @@ input,
     border: none;
 }
 a[href] {
-    color: var(--text-color);
     text-decoration: none;
+}
+
+.bt-primary{
+    background-color: #E66D4F;
+    color: #FFFFFF;
+}
+.bt-primary:hover{
+    background-color: #E66D4F;
+    color: #FFFFFF;
 }

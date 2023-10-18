@@ -1,35 +1,48 @@
-import React, { useState } from 'react';
-import { Button, Modal, Tooltip, Input, Space, Select } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Modal, Tooltip, Input, Space, Select, TreeSelect } from 'antd';
 import { SearchOutlined, CaretDownOutlined } from '@ant-design/icons';
-const Searchbox = () => {
+const Searchbox = ({datalocation}) => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const locations = datalocation;
+  const nameLocation = [];
   const [modalText, setModalText] = useState('Content of the modal');
   const { Search } = Input;
   const onSearch = (value, _e, info) => console.log(info?.source, value);
   let searchResult = "";
   let category = [];
   let filter = [];
-  const sumSearch = (value) =>{
+  const sumSearch = (value) => {
     searchResult.push(value);
 
   }
   const showModal = () => {
     setOpen(true);
   };
-  const options = [];
-  for (let i = 10; i < 36; i++) {
-    options.push({
-      label: i.toString(36) + i,
-      value: i.toString(36) + i,
-    });
-  }
+  const optionsAcreage = [
+    { value: '10', label: '10' },
+    { value: '20', label: '20' },
+    { value: '30', label: '30' },
+    { value: '40', label: '40' },
+    { value: '50', label: '50' }
+  ];
+  const optionsPrice = [
+    { value: '1.000.000-3.000.000', label: '1.000.000-3.000.000' },
+    { value: '3.000.000-5.000.000', label: '3.000.000-5.000.000' }
+  ];
+
+  const optionsUtilities = [
+    { value: 'Tủ Lạnh', label: 'Tủ Lạnh' },
+    { value: 'Điều Hòa', label: 'Điều Hòa' },
+    { value: 'Bình nóng lạnh', label: 'Bình nóng lạnh' },
+    { value: 'Máy giặt', label: 'Máy giặt' }
+  ];
   const handleChange = (value) => {
     console.log(`selected ${value}`);
     category.push(value);
   };
   const handleOk = () => {
-    filter.push(...category,searchResult);
+    filter.push(...category, searchResult);
     console.log(filter, 'hay');
     setModalText('The modal will be closed after two seconds');
     setConfirmLoading(true);
@@ -59,18 +72,32 @@ const Searchbox = () => {
         okText="Search"
       >
         <div className='d-flex flex-column row-gap-3'>
-          <Search placeholder="Tìm kiếm phòng trọ..." onSearch={onSearch} onChange={handleChangeInput} size='large' />
+          <Search placeholder="Tìm kiếm phòng trọ..." onSearch={onSearch} onChange={handleChangeInput} size='30px' />
           <h6>Filter</h6>
           <div className='select-option d-flex column-gap-2'>
-            <Select
+            {/* <Select
               mode="multiple"
               allowClear
               style={{
                 width: '50%',
               }}
-              placeholder="Please select"
+              placeholder="Vị Trí"
               onChange={handleChange}
-              options={options}
+              options={optionsLocation}
+            /> */}
+            <TreeSelect
+              style={{
+                width: '50%',
+              }}
+              onChange={handleChange}
+              dropdownStyle={{
+                maxHeight: 400,
+                overflow: 'auto',
+              }}
+              treeData={locations}
+              placeholder="Vị trí"
+              
+              allowClear
             />
             <Select
               mode="multiple"
@@ -78,9 +105,9 @@ const Searchbox = () => {
               style={{
                 width: '50%',
               }}
-              placeholder="Please select"
+              placeholder="Diện Tích"
               onChange={handleChange}
-              options={options}
+              options={optionsAcreage}
             />
           </div>
           <div className='select-option d-flex column-gap-2'>
@@ -90,9 +117,9 @@ const Searchbox = () => {
               style={{
                 width: '50%',
               }}
-              placeholder="Please select"
+              placeholder="Giá Tiền"
               onChange={handleChange}
-              options={options}
+              options={optionsPrice}
             />
             <Select
               mode="multiple"
@@ -100,9 +127,9 @@ const Searchbox = () => {
               style={{
                 width: '50%',
               }}
-              placeholder="Please select"
+              placeholder="Tiện Ích"
               onChange={handleChange}
-              options={options}
+              options={optionsUtilities}
             />
           </div>
         </div>

@@ -16,10 +16,16 @@ export const register = async (
             password: password,
             firstname: firstName,
             lastname: lastName
-        }
+        },{
+        withCredentials: true
+    }
     )
 }
-
+export const provinces1 = async () => {
+    const response = await axios.get("https://provinces.open-api.vn/api/?depth=3");
+    return response.data;
+  };
+  
 export const login = async (
     email,
     password

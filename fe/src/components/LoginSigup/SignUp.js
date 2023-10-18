@@ -5,6 +5,7 @@ import { AiFillGoogleCircle } from 'react-icons/ai'
 import { useNavigate, Outlet, NavLink, useParams, redirect } from 'react-router-dom';
 import { login, register } from '../../services/auth.service';
 import Cookies from 'js-cookie';
+import { ToastContainer, toast } from 'react-toastify';
 const SignUp = () => {
     const nav = useNavigate();
     // Xử lý submit form
@@ -12,32 +13,36 @@ const SignUp = () => {
         const data = {
             ...values,
         }
-        console.log("data", data);
+        // console.log("data", data);
         // const token = Cookies.get('accessToken');
         // console.log("cookies : ", token);
 
         try {
-          const res = await register(data.firstName,data.lastName,data.email, data.password);
+            const res = await register(data.firstName, data.lastName, data.email, data.password);
             // document.cookie = `token=${res.token}`;
-              console.log("Res", res);
+            // console.log("Res", res);
+            toast.success(res.data.message)
+             nav("/login");
             // const cookieValue = res.headers['set-cookie'];
-            // nav("/");
 
         } catch (error) {
-            if (error.response && error.response.data && error.response.data.error) {
+            if (error.response && error.response.data || error.response.data.messages) {
                 // Lấy thông báo lỗi từ phía backend
-                const errorMessage = error.response.data.error;
+                const errorMessage = error.response.data;
                 // Xác định xem lỗi là do trường email hay password
-                if (errorMessage.includes('email')) {
+                if (errorMessage.includes('Email')) {
                     // Đặt thông báo lỗi cho trường email
-                    setFieldError('email', errorMessage);
+                      setFieldError('email', errorMessage);
+                    // toast.error("invalid email")
                 } else if (errorMessage.includes('password')) {
                     // Đặt thông báo lỗi cho trường password
-                    setFieldError('password', errorMessage);
-
+                    //  setFieldError('password', errorMessage);
+                     setFieldError('password', 'Mật khẩu không hợp lệ. Mật khẩu phải chứa ít nhất một chữ cái thường, một chữ cái hoa và một số.');
+                
                 }
+
             }
-            console.log("error",error);
+            console.log("error", error);
         }
 
 

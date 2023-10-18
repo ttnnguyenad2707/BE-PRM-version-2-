@@ -1,0 +1,41 @@
+.Card_search{
+    max-height: 200px;
+    max-width: inherit;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    padding: 10px;
+    position: relative;
+    .image-card{
+        width: 30%;
+        height: 100%;
+    }
+    p{
+        margin: unset;
+    }
+    .btn-favorite{
+        width: fit-content;
+        height: fit-content;
+        font-size: 25px;
+        color: #fff;
+        background-color: #E66D4F;
+        font-weight: bold;
+        padding: 5px;
+        border-radius: 3px;
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        .bi-heart,.bi-heart-fill{
+            font-size: 18px;
+            font-weight: bold;
+        }
+    }
+    .btn-favorite:hover{
+        transform: scale(1.025);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+}
+
+.Card_search:hover{
+    transform: scale(1.025);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}

@@ -3,14 +3,18 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
-
-const { SERVER_PORT, MONGOODB_URL } = process.env;
+const cloudinary = require('cloudinary').v2;
+const { SERVER_PORT, MONGOODB_URL, SOCKETIO_PORT } = process.env;
+const { Server } = require("socket.io")
+const socketIO = require("../config/socketIO");
 
 const app = express();
-app.use(cors({ origin: true, credentials: true}));
+app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+socketIO.listen(Number(SOCKETIO_PORT));
 
 app.use(
   '/api/v1',
@@ -29,5 +33,4 @@ const startServer = async () => {
     console.error("Error connecting to MongoDB:", err);
   }
 };
-
 startServer();

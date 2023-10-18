@@ -1,5 +1,8 @@
 .Card{
     width: 100%;
+    p{
+        margin: unset;
+    }
 }
 .Card:hover{
     transform: scale(1.05);

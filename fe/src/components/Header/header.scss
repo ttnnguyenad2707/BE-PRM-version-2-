@@ -81,6 +81,12 @@ h1, h2, h3, h4, h5, h6{
     font-weight: bold;
     text-decoration: unset;
 }
+.login:hover {
+    color: #ad5843;
+    font-size:large;
+    font-weight: bold;
+    text-decoration: unset;
+}
 
 .btn-post{
     background-color: #E66D4F;
@@ -102,7 +108,7 @@ h1, h2, h3, h4, h5, h6{
     border-radius: 50%;
     background-color: #E66D4F;
     color: black;
-    width: 50%;
+    width: 70%;
     position:absolute;
     bottom: 0;
     right: 0;

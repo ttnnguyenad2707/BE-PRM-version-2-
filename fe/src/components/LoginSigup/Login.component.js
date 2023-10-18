@@ -6,6 +6,7 @@ import { useNavigate, Outlet, NavLink, useParams, redirect } from 'react-router-
 import { login } from '../../services/auth.service';
 import { UserContext } from '../../App';
 import { useContext, useState } from "react";
+import { ToastContainer, toast } from 'react-toastify';
 
 const Login = () => {
     const nav = useNavigate();
@@ -18,7 +19,7 @@ const Login = () => {
 
         try {
             const res = await login(data.email, data.password,);
-           
+            toast.success(`Chào mừng ${res.data.lastname}`)
             nav("/");
 
         } catch (error) {

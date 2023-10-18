@@ -1,0 +1,51 @@
+.component-usePosted {
+    padding-top: 60px;
+
+    &.bg-F4F4F4 {
+        background-color: #F4F4F4;
+    }
+
+    .bgr-primary {
+        background-color: var(--color-primary);
+    }
+
+    .btn-bg-primary {
+        background-color: var(--color-primary);
+    }
+
+    .text-white {
+        color: #FFFFFF;
+    }
+
+    .component-title {
+        color: #000000;
+        font-size: 32px;
+        font-weight: 600;
+        line-height: normal;
+    }
+
+    .btn-radius {
+        border-radius: 8px;
+    }
+
+    .content {
+        background-color: #FFFFFF;
+        padding: 16px 32px;
+
+        .profile-user {
+            margin: 16px 0;
+            padding: 16px 30px;
+
+            .user-box {
+                .user-link {
+                    .username {
+                        color: #000000;
+                        font-size: 20px;
+                        font-weight: 600;
+                        line-height: normal;
+                    }
+                }
+            }
+        }
+    }
+}
