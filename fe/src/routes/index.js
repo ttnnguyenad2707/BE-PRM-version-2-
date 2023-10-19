@@ -14,11 +14,8 @@ import SignUp from "../components/LoginSigup/SignUp";
 import CreatePost from "../components/CreatePost/CreatePost.component";
 import CreatePostPage from "../page/CreatePostPage";
 import PostDetails from "../components/PostDetails/PostDetails.component";
-<<<<<<< HEAD
 import Savepage from "../page/Savepage";
-=======
 import Chat from "../components/Chat/Chat";
->>>>>>> b4c52d0c76c227b8e7c589603829d6c66e6697f3
 
 export const appRoutes = createBrowserRouter([
     {
