@@ -123,35 +123,6 @@ class PostService {
             return res.status(500).json({ Error: error.toString() })
         }
     }
-    // async getFilterValue({ address, area, price, utils, currentPage }) {
-    //     const query = {};
-    //     const perPage = 10;
-    //     try {
-    //         const skip = (currentPage - 1) * perPage;
-
-    //         if (address) {
-    //             query.address = { $regex: address, $options: 'i' };
-    //         }
-    //         if (area) {
-    //             query.area = { $gte: parseFloat(area) };
-    //         }
-    //         if (price) {
-    //             query.price = { $lte: parseFloat(price) };
-    //         }
-    //         if (utils && utils.length > 0) {
-    //             query.utils = { $all: utils };
-    //         }
-
-    //         const result = await Post.find(query)
-    //             .skip(skip)
-    //             .limit(perPage)
-    //             .exec();
-
-    //         return result;
-    //     } catch (error) {
-    //         return { error: error.message };
-    //     }
-    // }
     async getFilterValue({ address, area, price, utils, currentPage }) {
         const query = {};
         const perPage = 10;
