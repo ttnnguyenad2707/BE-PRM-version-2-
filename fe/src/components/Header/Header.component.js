@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Col, Row, Input, Space, Dropdown, message, Button, Checkbox, Menu } from 'antd';
-import Icon, { MessageOutlined, BellOutlined, PlusOutlined, DownOutlined, UnorderedListOutlined,UserOutlined  } from '@ant-design/icons';
+import Icon, { MessageOutlined, BellOutlined, PlusOutlined, DownOutlined, UnorderedListOutlined, UserOutlined } from '@ant-design/icons';
 import Searchbox from '../Searchbox/Searchbox.component.js';
 import './header.scss'
 import { Link, NavLink } from 'react-router-dom';
@@ -23,7 +23,7 @@ const Headercomponent = () => {
 
         checkUser(token)
             .then((res) => {
-                
+
                 setUser(res.data);
             })
             .catch((error) => {
@@ -39,7 +39,7 @@ const Headercomponent = () => {
     const onClick = ({ key }) => {
         message.info(`Click on item ${key}`);
     };
-    const hadlePostCreateButton = ()=>{
+    const hadlePostCreateButton = () => {
         if (!token) {
             navigate('/login');
             return;
@@ -77,7 +77,7 @@ const Headercomponent = () => {
             <div className='position-sticky top-0 start-0 end-0 z-1 background-primary' style={{ padding: '15px 0' }}>
                 <Row className='header-container container-fluid justify-content-between ps-5 pe-5'>
                     <div className='d-flex align-item-center gap-3'>
-                        <h1 id='logo'>HomeRadar</h1>
+                        <NavLink className="nav-link" activeClassName="active" to="/"> <h1 id='logo'>HomeRadar</h1></NavLink>
                         <button className='btn-list'>
                             <Dropdown
                                 menu={{
@@ -121,7 +121,7 @@ const Headercomponent = () => {
                         {/* {user ? <a className='login'> {user.lastname}</a> : <a className='login'>Đăng nhập</a>} */}
                         {user ? (
                             <NavLink className='login d-flex flex-column justify-content-center' style={{ color: '#E66D4F' }}>
-                                <UserOutlined  style={{ color: '#E66D4F', fontSize: '30px' }}/>
+                                <UserOutlined style={{ color: '#E66D4F', fontSize: '30px' }} />
                                 {user.lastname}
                             </NavLink>
                         ) : (
@@ -129,11 +129,11 @@ const Headercomponent = () => {
                                 Đăng nhập
                             </NavLink>
                         )}
-                        <button className='btn-post' onClick={()=>{hadlePostCreateButton()}}><PlusOutlined style={{ fontSize: '15px', color: 'white' }} /> Đăng tin</button>
+                        <button className='btn-post' onClick={() => { hadlePostCreateButton() }}><PlusOutlined style={{ fontSize: '15px', color: 'white' }} /> Đăng tin</button>
                     </div>
                 </Row>
             </div>
-            <Outlet context={[user]}/>
+            <Outlet context={[user]} />
         </div>
     );
 }

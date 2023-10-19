@@ -5,7 +5,7 @@ const {verifyToken}=require("../middlewares/verifyToken.middleware");
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-router.post('/',validatePOST, PostController.createOne);
+router.post('/',verifyToken,validatePOST, PostController.createOne);
 router.put('/:id',verifyToken,validatePUT, PostController.updateOne);
 router.get('/getByNumberPost',PostController.readPostWithQuantity);
 router.get('/getPosted',PostController.getPosted);

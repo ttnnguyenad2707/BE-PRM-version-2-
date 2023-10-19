@@ -5,7 +5,7 @@ const { ACCESS_KEY } = process.env;
 const verifyToken = asyncHandler(async (req, res, next) => {
     const token = req.headers.token;
     if (token) {
-        const accessToken = token.split(" ")[0];
+        const accessToken = token.split(" ")[1];
         try {
             const user = jwt.verify(accessToken, ACCESS_KEY);
             req.user = user;
