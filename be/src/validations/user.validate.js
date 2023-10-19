@@ -28,6 +28,10 @@ module.exports = {
                 .not(null)
                 .only()
                 .required(),
+                phone: Joi.string()
+                .length({ min: 10 })
+                .allow('', null),
+                
             // password: Joi.string()
             //     .min(8)
             //     .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$')) // Mật khẩu phải chứa ít nhất một chữ cái thường, một chữ cái hoa và một số

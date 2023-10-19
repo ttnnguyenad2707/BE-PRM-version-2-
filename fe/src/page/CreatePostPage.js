@@ -28,7 +28,7 @@ const CreatePostPage = () => {
     const token = Cookies.get('accessToken');
     // console.log("token", token);
     const [user] = useOutletContext();
-    console.log("render", user);
+    // console.log("render", user);
     const [isLoading, setIsLoading] = useState(true);
 
     const [files, setFiles] = useState([]);
@@ -197,8 +197,8 @@ const CreatePostPage = () => {
 
 
     const handleSubmitForm = async (values) => {
-
-        validateForm(values); // Kiểm tra hợp lệ
+ // cần phải validate lại để khi đủ format mới cho phép gửi. tạm thời bây giờ dù thông báo nhưng vẫn bị gửi xuống BE(và tả về lỗi axios)
+       await validateForm(values); // Kiểm tra hợp lệ
 
         const { district, ward, numberAddress, ...restValues } = values;  // Loại bỏ trường district,ward (useState) từ đối tượng values vì bị thừa, numberAddress ko can vi ko phai state
         const fullAddress = `${restValues.address}, ${values.district}, ${values.ward}, ${values.numberAddress}`;
@@ -217,19 +217,19 @@ const CreatePostPage = () => {
         console.log(data);
 
 
-        try {
-            const res = await createPost(data, token)
-            console.log("res from form", res);
-            toast.success(`Create success!`)
-             navigate("/stored/posted")
+        // try {
+        //     const res = await createPost(data, token)
+        //     console.log("res from form", res);
+        //     toast.success(`Create success!`)
+        //      navigate("/stored/posted")
 
-            // const dataRespon = res?.data?.article
-            // navigate(`/article/${dataRespon.slug}`)
-        } catch (error) {
-            console.log(error);
-            toast.danger(`Create fail!`)
+        //     // const dataRespon = res?.data?.article
+        //     // navigate(`/article/${dataRespon.slug}`)
+        // } catch (error) {
+        //     console.log(error);
+        //     toast.danger(`Create fail!`)
 
-        }
+        // }
     }
     const validateForm = (values) => {
         const errors = {};

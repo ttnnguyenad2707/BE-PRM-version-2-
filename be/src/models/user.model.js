@@ -31,6 +31,11 @@ const User = new mongoose.Schema({
     },
     refreshToken:{
         type:String,
+    },
+    phone : {
+        type: String,
+        minlength: 10,
+
     }
 }, { timestamps: true });
 module.exports = mongoose.model("User", User);
