@@ -12,12 +12,13 @@ import {
     DollarOutlined,
     EnvironmentOutlined
 } from '@ant-design/icons';
+import PostCard from '../PostCard/PostCard.component';
 const CarouselProduct = ({ data }) => {
     const dataSource = data;
     const navigate = useNavigate();
     const { Meta } = Card;
     let settings;
-    if (data.length > 5) {
+    // if (data.length > 5) {
         settings = {
             infinite: true,
             speed: 500,
@@ -27,12 +28,12 @@ const CarouselProduct = ({ data }) => {
             autoplaySpeed: 2000,
         };
 
-    }
-    else {
-        settings = {
-            unslick: true,
-        }
-    }
+    // }
+    // else {
+    //     settings = {
+    //         unslick: true,
+    //     }
+    // }
     const Checkclick = () => {
         var element = document.getElementById("icon-favorite");
         console.log(element.className === "bi-heart");
@@ -50,26 +51,7 @@ const CarouselProduct = ({ data }) => {
                 {dataSource?.map((post) => {
                     return (
                         <div className='Card'>
-                            <Card
-                                hoverable
-                                style={{
-                                    width: '95%',
-                                    minHeight: '480px'
-                                }}
-                                cover={<img alt="example" src={post.images[0]} />}
-                            >
-                                <div className='d-flex flex-column gap-2'>
-                                    <h6 className='d-flex gap-2'>
-                                        <NavLink to={`/detail/${post._id}`} className='login' style={{ color: 'Black' }} >
-                                            <HomeOutlined />
-                                            {post.title}
-                                        </NavLink>
-                                    </h6>
-                                    <p className='d-flex gap-2'><DollarOutlined />{post.price}</p>
-                                    <p className='d-flex gap-2'><EnvironmentOutlined />{post.address}</p>
-                                </div>
-                                <button className='btn-favorite d-flex mb-3 me-4' onClick={Checkclick}><i className="bi-heart" id='icon-favorite'> Save</i></button>
-                            </Card>
+                            <PostCard post={post}/>
                         </div>
                     );
                 })}

@@ -24,7 +24,7 @@ class PostService {
         const currentPage = parseInt(req.params.currentPage);
         const perPage = 10;
         const skip = (currentPage - 1) * perPage;
-        const result=await Post.find()
+        const result=await Post.find({deleted: false})
         .skip(skip)
         .limit(perPage).exec() ;
         return res.status(200).json(result)
@@ -51,7 +51,14 @@ class PostService {
         }
     }
     async getDetail(req, res) {
-        const { } = req.body;
+        try {
+            const {slug} = req.params;
+            const PostDetails =await Post.findOne({slug: slug});
+            return res.status(200).json(PostDetails);
+        } catch (error) {
+            return res.status(500).json({Error: error.toString()})           
+        }
+
     }
 
     async getSearchValue(req, res) {
@@ -78,7 +85,7 @@ class PostService {
     }
     async loadDeletedPost(req,res){
         try {
-            const result = await Post.find({deleted: true});
+            const result = await Post.find({deleted: true,owner:req.user.id});
             return res.status(200).json(result);
         } catch (error) {
             return res.status(500).json({Error: error.toString()})
@@ -169,6 +176,17 @@ class PostService {
         } catch (error) {
             return res.status(500).json(error.message);
         }
+    }
+
+    async getPostedByOwner(req, res) {
+        try {
+            const {id} = req.params;
+            const listPost =await Post.find({owner: id,deleted:false});
+            return res.status(200).json(listPost);
+        } catch (error) {
+            return res.status(500).json({Error: error.toString()})           
+        }
+
     }
     async removeFavoritePost(req, res) {
         try {

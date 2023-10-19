@@ -16,6 +16,7 @@ import CreatePostPage from "../page/CreatePostPage";
 import PostDetails from "../components/PostDetails/PostDetails.component";
 import Savepage from "../page/Savepage";
 import Chat from "../components/Chat/Chat";
+import PosterProfile from "../components/User/PosterPage.component";
 
 export const appRoutes = createBrowserRouter([
     {
@@ -76,13 +77,14 @@ export const appRoutes = createBrowserRouter([
             },
             
             {
-                path: '/post/slug',
+                path: '/post/:slug',
                 element: <PostDetails/>
             },
             {
-                path: '/savepost',
-                element: <Savepage/>
-            },
+                path:'/user/:posterId',
+                element: <PosterProfile/>
+            }
+            
         ]
     },
     {
