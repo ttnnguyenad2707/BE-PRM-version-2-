@@ -21,7 +21,12 @@ class PostService {
         const { } = req.body;
     }
     async getAll(req,res){
-        const result=await Post.find();
+        const currentPage = parseInt(req.params.currentPage);
+        const perPage = 10;
+        const skip = (currentPage - 1) * perPage;
+        const result=await Post.find()
+        .skip(skip)
+        .limit(perPage).exec() ;
         return res.status(200).json(result)
     }
     async readPostWithQuantity(req,res){
@@ -52,7 +57,7 @@ class PostService {
     async getSearchValue(req, res) {
         const searchParam = req.params.searchParam;
         const currentPage = parseInt(req.params.currentPage);
-        const perPage = 5;
+        const perPage = 10;
     
         try {
             const skip = (currentPage - 1) * perPage;
@@ -113,7 +118,7 @@ class PostService {
     }
     async getFilterValue({ address, area, price, utils, currentPage }) {
         const query = {};
-        const perPage = 5;
+        const perPage = 10;
         try {
             const skip = (currentPage - 1) * perPage;
     
@@ -137,11 +142,22 @@ class PostService {
     
             return result;
         } catch (error) {
-            // Tạo đối tượng JSON response để báo lỗi
             return { error: error.message };
         }
     }
-
+    async getLandingPost(req, res) {
+        try {
+            const result = await Post.find().sort({ createdAt: -1 })
+            .limit(10)
+            .exec(); 
+            return res.status(200).json({
+                message: "get landing post success",
+                data: result
+            });
+        } catch (error) {
+            return res.status(500).json({ error: error.toString() });
+        }
+    }
     async favoritePost(req,res){
         try {
             const {userId,idPost}=req.body;
@@ -154,6 +170,22 @@ class PostService {
             return res.status(500).json(error.message);
         }
     }
+    async removeFavoritePost(req, res) {
+        try {
+            const { userId, idPost } = req.body;
+            const getUser = await User.findById(userId);
+            const getAllFavorite = getUser.favoritePost;
+            
+            const updatedFavorite = getAllFavorite.filter(postId => postId !== idPost);
+    
+            const result = await User.findByIdAndUpdate(userId, { favoritePost: updatedFavorite });
+    
+            return res.status(200).json("Remove favorite successfully");
+        } catch (error) {
+            return res.status(500).json(error.message);
+        }
+    }
+    
 }
 
 module.exports = new PostService();
