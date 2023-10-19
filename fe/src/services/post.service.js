@@ -1,12 +1,29 @@
 import axios from 'axios';
 import { URL_SERVER } from '../dataConfig';
+import Cookies from 'js-cookie';
+
+const token = Cookies.get('accessToken');
 
 export const getPostedStore = async (type) => {
+
+    
     if(type === 'posted'){
-        return await axios.get(`${URL_SERVER}/post/getPosted`,)
+        return await axios.get(`${URL_SERVER}/post/getPosted`,{ 
+            withCredentials: true,
+    
+            headers: {
+                token: `Bearer ${token}`,
+            }
+        })
     }
+
     else if(type === 'deleted'){
-        return await axios.get(`${URL_SERVER}/post/getdeletedpost`,)
+        return await axios.get(`${URL_SERVER}/post/getdeletedpost`,{  
+
+            headers: {
+                token: `Bearer ${token}`,
+            }
+        })
 
     }
 }
@@ -21,22 +38,70 @@ export const createPost = async (data,token) => {
 }
 
 export const getPostedById = async (id) => {
-    return await axios.get(`${URL_SERVER}/post/${id}`)
+    return await axios.get(`${URL_SERVER}/post/${id}`,{ 
+        withCredentials: true,
+
+        headers: {
+            token: `Bearer ${token}`,
+        }
+    })
 }
 
 export const deletePost = async (id) => {
-    return await axios.delete(`${URL_SERVER}/post/${id}`)
+    return await axios.delete(`${URL_SERVER}/post/${id}`,{ 
+        withCredentials: true,
+
+        headers: {
+            token: `Bearer ${token}`,
+        }
+    })
 }
 
 export const editPost = async (id) => {
-    return await axios.put(`${URL_SERVER}/post/${id}`)
+    return await axios.put(`${URL_SERVER}/post/${id}`,{ 
+        withCredentials: true,
+
+        headers: {
+            token: `Bearer ${token}`,
+        }
+    })
 }
 
 export const restorePost = async (id) => {
-    console.log(id);
-    return await axios.post(`${URL_SERVER}/post/${id}`)
+    return await axios.post(`${URL_SERVER}/post/${id}`,null,{ 
+        withCredentials: true,
+
+        headers: {
+            token: `Bearer ${token}`,
+        }
+    })
 }
 
 export const destroyPost = async (id) => {
-    return await axios.delete(`${URL_SERVER}/post/destroy/${id}`)
+    return await axios.delete(`${URL_SERVER}/post/destroy/${id}`,{ 
+        withCredentials: true,
+
+        headers: {
+            token: `Bearer ${token}`,
+        }
+    })
+}
+export const searchPost = async (title,currentPage) => {
+    return await axios.get(`${URL_SERVER}/post/search/${title}/${currentPage}`,{ 
+        withCredentials: true,
+
+        headers: {
+            token: `Bearer ${token}`,
+        }
+    })
+}
+
+export const getAllPost_pagging = async (currentPage) => {
+    return await axios.get(`${URL_SERVER}/post/${currentPage}`,{ 
+        withCredentials: true,
+
+        headers: {
+            token: `Bearer ${token}`,
+        }
+    })
 }

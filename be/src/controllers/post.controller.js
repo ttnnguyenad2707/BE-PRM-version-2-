@@ -1,14 +1,18 @@
 const asyncHandler = require('../utils/async-handler');
 const PostService = require("../services/post.service");
+const { post } = require('../routes/post.route');
 
 
 module.exports = {
-
+    
     createOne: asyncHandler(async (req, res) => {
         const post = await PostService.createOne(req, res);
     }),
     upload: asyncHandler(async (req, res) => {
         const post = await PostService.upload(req, res);
+    }),
+    getAll:asyncHandler(async (req, res) => {
+        const post = await PostService.getAll(req, res);
     }),
     updateOne: asyncHandler(async (req, res) => {
         const post = await PostService.updateOne(req, res);
@@ -33,5 +37,23 @@ module.exports = {
     }),
     getPostedById: asyncHandler(async (req, res) => {
         const post = await PostService.getPostedById(req, res);
+    }),
+    getDetail: asyncHandler(async (req, res) => {
+        post = await PostService.getDetail(req, res);
+    }),
+    getSearchValue: asyncHandler(async (req, res) => {
+        post = await PostService.getSearchValue(req, res);
+    }),
+    getFilterValue: asyncHandler(async (req, res) => {
+        const { address, area, price, utils, currentPage} = req.body;
+        try {
+            const result = await PostService.getFilterValue({ address, area, price, utils, currentPage });
+            return res.status(200).json({ message: "filter result", data: result });
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    }),
+    favoritePost: asyncHandler(async (req, res) => {
+        const user = await PostService.favoritePost(req, res);
     }),
 };

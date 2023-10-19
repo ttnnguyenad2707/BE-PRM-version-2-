@@ -8,12 +8,13 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { checkUser } from '../../services/auth.service.js';
 import CreatePostPage from '../../page/CreatePostPage.js';
-
+import axios from 'axios';
 /* logo , search space with icon search, icon notifiaction, icon search, link login, link register, button post */
 
 const Headercomponent = () => {
     const token = Cookies.get('accessToken');
     const [user, setUser] = useState(null);
+    const [location, setLocation] = useState();
     const navigate = useNavigate()
     useEffect(() => {
         if (!token) {
@@ -71,13 +72,33 @@ const Headercomponent = () => {
             return [...prevSelectedKeys, key];
         });
     };
+    const fetchLocation = async () => {
+        try {
+            const response = await axios.get('https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json');
+            const transformedData = response.data.map(item => ({
+                title: item.Name,
+                value: item.Name,
+                children: item.Districts ? item.Districts.map(child => ({
+                    title: child.Name,
+                    value: child.Name,
+                })) : []
+            }));
 
+            setLocation(transformedData);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchLocation();
+    }, [])
     return (
         <div className='Body'>
-            <div className='position-sticky top-0 start-0 end-0 z-1 background-primary' style={{ padding: '15px 0' }}>
+            <div className='position-sticky top-0 start-0 end-0 z-2 background-primary' style={{ padding: '15px 0' }}>
                 <Row className='header-container container-fluid justify-content-between ps-5 pe-5'>
-                    <div className='d-flex align-item-center gap-3'>
-                        <NavLink className="nav-link" activeClassName="active" to="/"> <h1 id='logo'>HomeRadar</h1></NavLink>
+                    <div className='d-flex align-item-center gap-1'>
+                        <Link to="/" id='logo'>HomeRadar</Link>
                         <button className='btn-list'>
                             <Dropdown
                                 menu={{
@@ -100,7 +121,7 @@ const Headercomponent = () => {
                     </Col> */}
                     <div className='d-flex align-items-center gap-5'>
                         <div className='search-box' >
-                            <Searchbox />
+                            <Searchbox datalocation={location} />
                         </div>
                         <button className='btn-bell position-relative'>
                             <BellOutlined style={{ fontSize: '30px', color: '#e25e3e' }} />
@@ -115,6 +136,7 @@ const Headercomponent = () => {
                             </div>
                         </button>
                         <button className='btn-mess position-relative'>
+                            <Link to={'/chat'}>abcd</Link>
                             <MessageOutlined style={{ fontSize: '30px', color: '#e25e3e' }} />
                             <p className='number-notification'>1</p>
                         </button>

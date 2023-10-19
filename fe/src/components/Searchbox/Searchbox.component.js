@@ -1,30 +1,33 @@
-import React, { useState } from 'react';
-import { Button, Modal, Tooltip, Input, Space, Select } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Modal, Tooltip, Input, Space, Select, TreeSelect } from 'antd';
 import { SearchOutlined, CaretDownOutlined } from '@ant-design/icons';
-const Searchbox = () => {
+import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
+const Searchbox = ({datalocation}) => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const locations = datalocation;
+  const navigate = useNavigate();
+  const nameLocation = [];
   const [modalText, setModalText] = useState('Content of the modal');
   const { Search } = Input;
-  const onSearch = (value, _e, info) => console.log(info?.source, value);
+  const onSearch = (value, _e, info) => {
+    setTimeout(() => {
+      setOpen(false);
+      setConfirmLoading(false);
+      navigate('/search', { state: { value } });
+    }, 500);
+  };
   let searchResult = "";
   let category = [];
   let filter = [];
-  const sumSearch = (value) =>{
+  const sumSearch = (value) => {
     searchResult.push(value);
 
   }
   const showModal = () => {
     setOpen(true);
   };
-  const optionsLocation = [
-    { value: 1, label: 'Hoa Lac' },
-    { value: 2, label: 'Thach That' },
-    { value: 3, label: 'Quoc Oai' },
-    { value: 4, label: 'Son Tay' },
-    { value: 5, label: 'Phuc Tho' },
-    { value: 6, label: 'Ha Noi' }
-  ];
   const optionsAcreage = [
     { value: '10', label: '10' },
     { value: '20', label: '20' },
@@ -36,7 +39,7 @@ const Searchbox = () => {
     { value: '1.000.000-3.000.000', label: '1.000.000-3.000.000' },
     { value: '3.000.000-5.000.000', label: '3.000.000-5.000.000' }
   ];
-  
+
   const optionsUtilities = [
     { value: 'Tủ Lạnh', label: 'Tủ Lạnh' },
     { value: 'Điều Hòa', label: 'Điều Hòa' },
@@ -46,9 +49,11 @@ const Searchbox = () => {
   const handleChange = (value) => {
     console.log(`selected ${value}`);
     category.push(value);
+    console.log(category);
   };
   const handleOk = () => {
-    filter.push(...category,searchResult);
+    console.log(category);
+    //filter.push(category);
     console.log(filter, 'hay');
     setModalText('The modal will be closed after two seconds');
     setConfirmLoading(true);
@@ -81,7 +86,7 @@ const Searchbox = () => {
           <Search placeholder="Tìm kiếm phòng trọ..." onSearch={onSearch} onChange={handleChangeInput} size='30px' />
           <h6>Filter</h6>
           <div className='select-option d-flex column-gap-2'>
-            <Select
+            {/* <Select
               mode="multiple"
               allowClear
               style={{
@@ -90,6 +95,20 @@ const Searchbox = () => {
               placeholder="Vị Trí"
               onChange={handleChange}
               options={optionsLocation}
+            /> */}
+            <TreeSelect
+              style={{
+                width: '50%',
+              }}
+              onChange={handleChange}
+              dropdownStyle={{
+                maxHeight: 400,
+                overflow: 'auto',
+              }}
+              treeData={locations}
+              placeholder="Vị trí"
+              
+              allowClear
             />
             <Select
               mode="multiple"

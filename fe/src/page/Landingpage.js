@@ -9,12 +9,22 @@ import Cookies from 'js-cookie';
 import { checkUser } from '../services/auth.service';
 import { getPostedStore } from '../services/post.service.js';
 import { useNavigate, NavLink } from 'react-router-dom'
+import {LoadingOutlined} from '@ant-design/icons';
 const Landingpage = () => {
     const [user, setUser] = useState({});
     const [data, setData] = useState();
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
     const token = Cookies.get('accessToken');
+    useEffect(()=> {
+        setTimeout(() => {
+            if(data){
 
+            setIsLoading(false);
+        }
+        }, 700);
+        
+    },[data])
     // useEffect(() => {
     //   if (!token) {
     //     navigate('/');
@@ -46,9 +56,10 @@ const Landingpage = () => {
         getData();
     }, []);
 
+    console.log(data);
     return (
         <>
-            <div className="container unset-slick-dots-li-button-before">
+        {isLoading == false && (<><div className="unset-slick-dots-li-button-before">
                 <Carousel afterChange={onChange} autoplay>
                     <div className="card-img">
                         <img src="https://lighthouse.chotot.com/_next/image?url=https%3A%2F%2Fcdn.chotot.com%2Fadmincentre%2FUcvcfUTYee0oRvekvI9K8zaCMCuJU3JE1G96GzRY2JU%2Fpreset%3Araw%2Fplain%2Fa9ad0f1e7102ae6b4e9ddc12cb6a9620-2828674230988306341.jpg&w=3840&q=90"
@@ -88,7 +99,9 @@ const Landingpage = () => {
             </div>
             <div className=" margin-top2">
                 <Footer />
-            </div>
+            </div></>)}
+            {isLoading == true && (<div className="text-center mt-5 fs-1"><LoadingOutlined /><div className='fs-2'>Loading ...</div> </div>)}
+            
 
         </>
 

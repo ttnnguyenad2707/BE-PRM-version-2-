@@ -4,7 +4,7 @@ import { appRoutes } from './routes/index'
 import { useState, createContext, useEffect } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import '../node_modules/bootstrap-icons/font/bootstrap-icons.css';
 
 
 function App() {

@@ -54,9 +54,10 @@ const Post = new mongoose.Schema({
   },
   images: {
     type: [String],
-  }, owner: {
+  }, 
+  owner: {
     type: String,
-    required: true
+    required: true,
   }
 
 }, { timestamps: true });

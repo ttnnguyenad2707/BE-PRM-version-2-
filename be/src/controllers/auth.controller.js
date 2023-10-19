@@ -5,6 +5,9 @@ module.exports = {
 
     registerUser: asyncHandler(async (req, res) => {
         const  user= await AuthService.registerUser(req,res);
+        res.status(200).json({
+            data: user
+        })
     }),
     loginUser: asyncHandler(async (req, res) => {
         const user = await AuthService.loginUser(req, res);

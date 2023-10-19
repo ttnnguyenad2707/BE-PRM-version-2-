@@ -4,24 +4,22 @@ const cors = require('cors');
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cloudinary = require('cloudinary').v2;
-const { SERVER_PORT, MONGOODB_URL } = process.env;
+const { SERVER_PORT, MONGOODB_URL, SOCKETIO_PORT } = process.env;
+const { Server } = require("socket.io")
+const socketIO = require("../config/socketIO");
 
 const app = express();
-app.use(cors({ origin: true, credentials: true}));
+app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+socketIO.listen(Number(SOCKETIO_PORT));
 
 app.use(
   '/api/v1',
   require('./routes')
 );
-
-// cloudinary.config({
-//   cloud_name: 'dtpujfoo8',
-//   api_key: '697855136624351',
-//   api_secret: 'gYkgLXmSaCiVhCM40clYpA_dFr8'
-// });
 
 const startServer = async () => {
   try {
