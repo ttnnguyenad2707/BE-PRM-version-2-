@@ -86,6 +86,10 @@ const Headercomponent = () => {
                 children: item.Districts ? item.Districts.map(child => ({
                     title: child.Name,
                     value: child.Name,
+                    children: child.Wards? child.Wards.map(wards => ({
+                        title: wards.Name,
+                        value: wards.Name,
+                    })):[]
                 })) : []
             }));
 

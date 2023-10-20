@@ -27,7 +27,7 @@ export const getPostedStore = async (type,token1) => {
     }
 }
 export const createPost = async (data,token) => {
-    
+    console.log(data, "created");
     return await axios.post(`${URL_SERVER}/post/`,data,{
         withCredentials: true,
         
@@ -138,6 +138,7 @@ const token = Cookies.get('accessToken');
 
 export const getPostfilter = async (address,area,price,utils,currentPage) => {
 const token = Cookies.get('accessToken');
+console.log(address,area,price,utils,currentPage,'day la services');
 
     return await axios.post(`${URL_SERVER}/post/search/filter`,{ 
         withCredentials: true,
