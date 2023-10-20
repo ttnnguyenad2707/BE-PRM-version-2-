@@ -48,7 +48,7 @@ module.exports = {
         const post = await PostService.getLandingPost(req, res);
     }),
     getFilterValue: asyncHandler(async (req, res) => {
-        const { address, area, price, utils, currentPage} = req.body;
+        const { address, area, price, utils, currentPage} = req.body.body;
         try {
             const result = await PostService.getFilterValue({ address, area, price, utils, currentPage });
             return res.status(200).json({ message: "filter result", data: result });
