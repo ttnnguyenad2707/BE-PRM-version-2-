@@ -7,17 +7,29 @@ import { AiOutlinePlus, AiFillDelete, AiFillEdit, AiOutlineLoading3Quarters } fr
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { ToastContainer, toast } from 'react-toastify';
 import * as Yup from 'yup';
+import axios from 'axios';
+import { updateUser } from '../../services/user.service';
+import Cookies from 'js-cookie';
+import { TiArrowUpOutline } from 'react-icons/ti';
 const Profile = () => {
-    console.log(images.avatarDefault);
-    const [user] = useOutletContext();
-    console.log("render", user);
+    // console.log(images.avatarDefault);
+    const [user, setUser] = useOutletContext();
+
+
+    // console.log("render", user);
+    const token = Cookies.get('accessToken');
 
     const [isLoading, setIsLoading] = useState(true);
+    const [isEditMode, setIsEditMode] = useState(false);
+    //   console.log("token",token);
     useEffect(() => {
         if (user) {
             setIsLoading(false);
+            console.log("chya vao effect");
         }
-    }, [user]);
+
+    }, [user,]);
+
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
     const validationSchema = Yup.object().shape({
         firstname: Yup.string().required('first name can not be blank'),
@@ -28,15 +40,26 @@ const Profile = () => {
             .nullable(),
         // Các quy tắc cho các trường dữ liệu khác
     });
+    if (user) {
+        var userID = user._id
+    }
+
     const handleSubmitForm = async (values) => {
         try {
-            
+            const res = await updateUser(token, userID, values)
+            const data = res.data.data
+            console.log("data", data);
+            setUser(data)
+            setIsEditMode(false)
+            toast.success(res.data.message)
+
         } catch (error) {
-            
+            console.log(error);
         }
-        console.log("values", values);
+        // console.log("values", values);
 
     }
+
     return (
         <>
             {isLoading ? (
@@ -63,20 +86,20 @@ const Profile = () => {
                                     <div className='profile-form'>
                                         <Formik
                                             initialValues={{
-                                                firstname: '',
-                                                lastname: "",
-                                                phone: '',
-                                                address: '',
-                                                gender: 'Male',
-                                                dob: '',
-                                                email: '',
+                                                firstname: user.firstname,
+                                                lastname: user.lastname,
+                                                phone: user.phone,
+                                                // address: '',
+                                                // gender: 'Male',
+                                                // dob: '',
+                                                email: user.email,
                                             }}
 
                                             onSubmit={handleSubmitForm}
                                             validationSchema={validationSchema}
 
                                         >
-                                            {({ errors, touched }) => (
+                                            {({ errors, touched, handleChange, values }) => (
                                                 <Form>
                                                     <div className='profile-title'>Hồ sơ cá nhân</div>
                                                     <div className='avatar d-flex align-items-center gap-5 mb-4'>
@@ -95,7 +118,7 @@ const Profile = () => {
                                                                 first Name
                                                             </label>
                                                             <div className='col-md-10'>
-                                                                <Field type='text' placeholder='firstname' name='firstname' id='firstname' className='form-control' />
+                                                                <Field type='text' placeholder='firstname' value={values.firstname} onChange={handleChange} disabled={!isEditMode} name='firstname' id='firstname' className='form-control' />
                                                                 <h5>  <ErrorMessage name="firstname" /></h5>
 
                                                             </div>
@@ -105,7 +128,7 @@ const Profile = () => {
                                                                 last Name
                                                             </label>
                                                             <div className='col-md-10'>
-                                                                <Field type='text' placeholder='lastname' name='lastname' id='lastname' className='form-control' />
+                                                                <Field type='text' placeholder='lastname' value={values.lastname} disabled={!isEditMode} name='lastname' id='lastname' className='form-control' />
                                                                 <h5>  <ErrorMessage name="lastname" /></h5>
                                                             </div>
                                                         </div>
@@ -114,7 +137,7 @@ const Profile = () => {
                                                                 SĐT
                                                             </label>
                                                             <div className='col-md-10'>
-                                                                <Field type='number' placeholder='phone' name='phone' id='phone' className='form-control' />
+                                                                <Field type='number' placeholder='phone' value={values.phone} disabled={!isEditMode} name='phone' id='phone' className='form-control' />
                                                                 <h5>  <ErrorMessage name="phone" /></h5>
                                                             </div>
                                                         </div>
@@ -154,11 +177,46 @@ const Profile = () => {
                                                             Email
                                                         </label>
                                                         <div className='col-md-10'>
-                                                            <Field type='email' placeholder='Email' name='email' id='email' className='form-control' />
+                                                            <Field type='email' placeholder='Email' value={values.email} disabled={!isEditMode} name='email' id='email' className='form-control' />
                                                             <h5>  <ErrorMessage name="email" /></h5>
                                                         </div>
                                                     </div>
-                                                    <button type='submit' className='text-center btn btn-bg-primary text-white'>Lưu thay đổi</button>
+                                                    <div className="profile-action">
+                                                        {isEditMode ? (
+                                                            <>
+                                                                <div className="row">
+                                                                    <div className="col-6 text-right">
+                                                                        <button type="submit" className="btn btn-bg-primary text-white btn-radius">
+                                                                            Save
+                                                                        </button>
+                                                                    </div>
+                                                                    <div className="col-6 text-right">
+                                                                        <button
+                                                                            type="button"
+                                                                            className="btn btn-bg-primary text-white btn-radius"
+                                                                            onClick={() => setIsEditMode(false)}
+                                                                        >
+                                                                            Cancel
+                                                                        </button>
+                                                                    </div>
+
+                                                                </div>
+
+
+
+
+                                                            </>
+                                                        ) : (
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-bg-primary text-white btn-radius"
+                                                                onClick={() => setIsEditMode(true)}
+                                                            >
+                                                                Edit
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                    {/* <button type='submit' className='text-center btn btn-bg-primary text-white'>Lưu thay đổi</button> */}
                                                 </Form>
                                             )}
                                         </Formik>

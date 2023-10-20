@@ -14,10 +14,14 @@ import TabPane from 'antd/es/tabs/TabPane';
 import Column from 'antd/es/table/Column';
 import { deletePost, destroyPost, getPostedStore, restorePost } from '../../services/post.service';
 import ColumnGroup from 'antd/es/table/ColumnGroup';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { Link, useNavigate, useOutletContext } from 'react-router-dom';
+import Cookies from 'js-cookie';
 const Posted = () => {
+    const navigate = useNavigate();
+    const token1 = Cookies.get('accessToken');
+    
     const [isLoading, setIsLoading] = useState(true);
-const [user]  = useOutletContext();
+    const [user]  = useOutletContext();
     useEffect(() => {
         if (user) {
             setIsLoading(false);
@@ -37,10 +41,10 @@ const [user]  = useOutletContext();
 
     useEffect(() => {
         if (activeTab === "1") {
-            getPostedStore("posted").then(data => { setDataPosted(data.data) });
+            getPostedStore("posted",token1).then(data => { setDataPosted(data.data) });
         }
         else if (activeTab === "2") {
-            getPostedStore("deleted").then(data => { setDataDeleted(data.data) });
+            getPostedStore("deleted",token1).then(data => { setDataDeleted(data.data) });
         }
 
     }, [activeTab])
@@ -57,7 +61,6 @@ const [user]  = useOutletContext();
 
     }
 
-    const navigate = useNavigate();
 
     const handleEdit = (id) => {
         navigate(`${id}`);
@@ -103,8 +106,8 @@ const [user]  = useOutletContext();
                                     <div className='user-link d-flex flex-column gap-2'>
                                         <div className='username'>{user.firstname}</div>
                                         <div className='list-button d-flex gap-2'>
-                                            <button className='btn btn-outline-danger'>Trang cá nhân</button>
-                                            <button className='btn btn-outline-danger'>Đăng bài viết mới </button>
+                                            <button className='btn btn-outline-danger' onClick={()=>{navigate("/profile")}}>Trang cá nhân</button>
+                                            <Link to='/post/create' className='btn btn-outline-danger'>Đăng bài viết mới </Link>
                                         </div>
                                     </div>
                                 </div>

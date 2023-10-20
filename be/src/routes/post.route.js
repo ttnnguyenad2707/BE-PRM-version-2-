@@ -17,11 +17,13 @@ router.delete('/:id',verifyToken,PostController.deletePost);
 router.post('/:id', verifyToken,PostController.restorePost);
 router.get('/getdeletedpost',verifyToken,PostController.loadDeletedPost);
 router.delete('/destroy/:id',verifyToken,PostController.destroyPostById)
+router.get('/:slug',PostController.getDetail);
 router.get('/:id',verifyToken,PostController.getPostedById);
 router.post('/upload',upload.single('image'),PostController.upload)
 router.get('/search/:searchParam/:currentPage', PostController.getSearchValue);
 router.post('/search/filter', PostController.getFilterValue);
-router.get('/:id',PostController.getDetail);
+
+router.get('/getpostedbyowner/:id',PostController.getPostedByOwner);
 
 
 module.exports = router;

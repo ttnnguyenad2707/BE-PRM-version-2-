@@ -28,9 +28,10 @@ module.exports = {
                 .not(null)
                 .only()
                 .required(),
-                phone: Joi.string()
-                .length({ min: 10 })
-                .allow('', null),
+
+                phone: Joi.number()
+                .allow('', null)
+                .min(10),
                 
             // password: Joi.string()
             //     .min(8)
