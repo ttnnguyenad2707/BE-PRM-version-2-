@@ -34,8 +34,13 @@ const User = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
-    refreshToken: {
-        type: String,
+    refreshToken:{
+        type:String,
+    },
+    phone : {
+        type: Number,
+        minlength: 10,
+
     }
 }, { timestamps: true });
 module.exports = mongoose.model("User", User);

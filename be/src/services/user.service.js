@@ -12,13 +12,23 @@ class UserService {
         }
     }
 
+    // async updateOne(req, res) {
+    //     try {
+    //         const result= await User.findByIdAndUpdate({_id:req.params.id},{...req.body});
+    //         return res.status(200).json({"message":"Update successfully","data":{...result._doc,password:"not show"}});
+            
+    //     } catch (error) {
+    //         return res.status(500).json({"error":error.message});
+    //     }
+    // }
     async updateOne(req, res) {
         try {
-            const result= await User.findByIdAndUpdate({_id:req.params.id},{...req.body});
-            return res.status(200).json({"message":"Update successfully","data":result});
-            
+            const updatedUser = await User.findByIdAndUpdate(req.params.id, { ...req.body });
+            const updatedUserData = await User.findById(req.params.id);
+    
+            return res.status(200).json({ "message": "Update successfully", "data": { ...updatedUserData._doc, password: "not show" } });
         } catch (error) {
-            return res.status(500).json({"error":error.message});
+            return res.status(500).json({ "error": error.message });
         }
     }
     

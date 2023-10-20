@@ -16,11 +16,13 @@ const Headercomponent = () => {
     const [user, setUser] = useState(null);
     const [location, setLocation] = useState();
     const navigate = useNavigate()
+ 
     useEffect(() => {
         if (!token) {
             navigate('/');
             return;
         }
+
 
         checkUser(token)
             .then((res) => {
@@ -32,7 +34,9 @@ const Headercomponent = () => {
                     navigate('/login');
                 }
             });
-    }, [token, navigate]);
+
+    }, [token, navigate,]);
+ 
 
     const [selectedKeys, setSelectedKeys] = useState([]);
     const { Search } = Input;
@@ -71,7 +75,7 @@ const Headercomponent = () => {
     };
 
     const checkClickItem = (a) => {
-        navigate('/search', { state: {listpage: "list page"} });
+        navigate('/search', { state: { listpage: "list page" } });
     }
     const fetchLocation = async () => {
         try {
@@ -101,6 +105,7 @@ const Headercomponent = () => {
         fetchLocation();
     }, [])
     return (
+
         <div className='Body'>
             <div className='position-sticky top-0 start-0 end-0 z-2 background-primary' style={{ padding: '15px 0' }}>
                 <Row className='header-container container-fluid justify-content-between ps-5 pe-5'>
@@ -148,7 +153,7 @@ const Headercomponent = () => {
                             <p className='number-notification'>1</p>
                         </button>
                         {/* {user ? <a className='login'> {user.lastname}</a> : <a className='login'>Đăng nhập</a>} */}
-                        {user ? (
+                        {user && user.lastname ? (
                             <NavLink className='login d-flex flex-column justify-content-center' style={{ color: '#E66D4F' }}>
                                 <UserOutlined style={{ color: '#E66D4F', fontSize: '30px' }} />
                                 {user.lastname}
@@ -166,7 +171,7 @@ const Headercomponent = () => {
                     </div>
                 </Row>
             </div>
-            <Outlet context={[user]} />
+            <Outlet context={[user, setUser]} />
         </div>
     );
 }

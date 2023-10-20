@@ -18,6 +18,8 @@ import Cookies from "js-cookie";
 import { createPost } from "../services/post.service";
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate, useOutletContext } from "react-router-dom";
+import { AiOutlinePlus, AiFillDelete, AiFillEdit, AiOutlineLoading3Quarters } from 'react-icons/ai'
+
 
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -26,7 +28,9 @@ const CreatePostPage = () => {
     const token = Cookies.get('accessToken');
     // console.log("token", token);
     const [user] = useOutletContext();
-    console.log("render", user);
+    // console.log("render", user);
+    const [isLoading, setIsLoading] = useState(true);
+
     const [files, setFiles] = useState([]);
     const navigate = useNavigate();
     const handleDrop = (acceptedFiles) => {
@@ -37,6 +41,12 @@ const CreatePostPage = () => {
         event.stopPropagation();
         setFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
     };
+
+    useEffect(() => {
+        if (user) {
+            setIsLoading(false);
+        }
+    }, [user]);
     const images = []
     // const [uploadedImages, setUploadedImages] = useState([]);
 
@@ -127,6 +137,7 @@ const CreatePostPage = () => {
     const uploadImages = async () => {
         if (files.length > 0) {
             try {
+
                 await uploadToCloudinary();
 
             } catch (error) {
@@ -186,8 +197,8 @@ const CreatePostPage = () => {
 
 
     const handleSubmitForm = async (values) => {
-
-        validateForm(values); // Kiểm tra hợp lệ
+ // cần phải validate lại để khi đủ format mới cho phép gửi. tạm thời bây giờ dù thông báo nhưng vẫn bị gửi xuống BE(và tả về lỗi axios)
+       await validateForm(values); // Kiểm tra hợp lệ
 
         const { district, ward, numberAddress, ...restValues } = values;  // Loại bỏ trường district,ward (useState) từ đối tượng values vì bị thừa, numberAddress ko can vi ko phai state
         const fullAddress = `${restValues.address}, ${values.district}, ${values.ward}, ${values.numberAddress}`;
@@ -200,25 +211,25 @@ const CreatePostPage = () => {
             ...restValues,
             address: fullAddress,
             images: images,
-            owner:user._id
+            owner: user._id
 
         }
         console.log(data);
 
 
-        try {
-            const res = await createPost(data, token)
-            console.log("res from form", res);
-            toast.success(`Create success!`)
-            navigate("/stored/posted")
+        // try {
+        //     const res = await createPost(data, token)
+        //     console.log("res from form", res);
+        //     toast.success(`Create success!`)
+        //      navigate("/stored/posted")
 
-            // const dataRespon = res?.data?.article
-            // navigate(`/article/${dataRespon.slug}`)
-        } catch (error) {
-            console.log(error);
-            toast.danger(`Create fail!`)
+        //     // const dataRespon = res?.data?.article
+        //     // navigate(`/article/${dataRespon.slug}`)
+        // } catch (error) {
+        //     console.log(error);
+        //     toast.danger(`Create fail!`)
 
-        }
+        // }
     }
     const validateForm = (values) => {
         const errors = {};
@@ -242,77 +253,85 @@ const CreatePostPage = () => {
     };
     return (
         <div>
-            <div className="container post-create">
-                <div className=" my-2">
-                    <h1 className='createTitle'>Đăng Tin</h1>
+            {isLoading ? (
+                <div className="text-center">
+                    <AiOutlineLoading3Quarters className="loading-icon" />
+                    <p>Loading...</p>
                 </div>
+            ) : (
+
+                <div className="container post-create">
+                    <div className=" my-2">
+                        <h1 className='createTitle'>Đăng Tin</h1>
+
+                    </div>
 
 
-                <Formik
-                    initialValues={{
-                        title: '',
-                        price: '',
-                        description: '',
-                        category: '',
-                        address: '',
-                        area: '',
-                        maxPeople: 0,
-                        price: 0,
-                        deposit: 0,
-                        security: [
+                    <Formik
+                        initialValues={{
+                            title: '',
+                            price: '',
+                            description: '',
+                            category: '',
+                            address: '',
+                            area: '',
+                            maxPeople: 0,
+                            price: 0,
+                            deposit: 0,
+                            security: [
 
-                        ],
-                        interior: [
+                            ],
+                            interior: [
 
-                        ],
-                        utils: [
+                            ],
+                            utils: [
 
-                        ],
-                        images: [
+                            ],
+                            images: [
 
-                        ]
-                    }}
-                    onSubmit={handleSubmitForm}
-                // validate={validateForm}
+                            ]
+                        }}
+                        onSubmit={handleSubmitForm}
+                    // validate={validateForm}
 
-                >
-                    <Form>
-                        <div className="row">
-                            <div className="col-4">
-                                <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
-                                    <input {...getInputProps()} />
+                    >
+                        <Form>
+                            <div className="row">
+                                <div className="col-4">
+                                    <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`}>
+                                        <input {...getInputProps()} />
 
-                                    {isDragActive ? (
-                                        <p>Thả các tệp tin vào đây...</p>
-                                    ) : (
-                                        <p>Kéo và thả các tệp tin vào đây, hoặc nhấp để chọn tệp tin</p>
-                                    )}
+                                        {isDragActive ? (
+                                            <p>Thả các tệp tin vào đây...</p>
+                                        ) : (
+                                            <p>Kéo và thả các tệp tin vào đây, hoặc nhấp để chọn tệp tin</p>
+                                        )}
 
-                                    <div className="preview">
-                                        {files.map((file) => (
-                                            <div key={file.name} className="file-preview">
-                                                {file.type.startsWith('video/') ? (
-                                                    <video src={URL.createObjectURL(file)} controls></video>
-                                                ) : (
-                                                    <img src={URL.createObjectURL(file)} alt={file.name} />
-                                                )}
-                                                <TiDelete className="delete-button"
-                                                    onClick={(event) => handleRemoveFile(event, file.name)}>
+                                        <div className="preview">
+                                            {files.map((file) => (
+                                                <div key={file.name} className="file-preview">
+                                                    {file.type.startsWith('video/') ? (
+                                                        <video src={URL.createObjectURL(file)} controls></video>
+                                                    ) : (
+                                                        <img src={URL.createObjectURL(file)} alt={file.name} />
+                                                    )}
+                                                    <TiDelete className="delete-button"
+                                                        onClick={(event) => handleRemoveFile(event, file.name)}>
 
-                                                </TiDelete>
+                                                    </TiDelete>
 
-                                            </div>
-                                        ))}
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="col-8">
-                                <div className="my-2">
+                                <div className="col-8">
+                                    <div className="my-2">
 
 
-                                    <Field className="form-control" name="title" as={TextField} label="Tiêu đề bài đăng" variant="outlined" />
-                                </div>
+                                        <Field className="form-control" name="title" as={TextField} label="Tiêu đề bài đăng" variant="outlined" />
+                                    </div>
 
                                 <div className="my-2">
                                     <Field className="form-control" name="description" as={TextareaAutosize} placeholder="Mô tả bài đăng" variant="outlined" row={4} style={{ height: '200px' }}/>
@@ -323,254 +342,258 @@ const CreatePostPage = () => {
 
 
 
-                                <div className="my-2">
-                                    <Field name="category" >
-                                        {({ field, form }) => (
-                                            <Autocomplete
-                                                {...field}
-                                                id="free-solo-demo"
-                                                freeSolo
-                                                options={Category.map((option) => option.title)}
-                                                onChange={(event, newValue) => {
-                                                    form.setFieldValue('category', newValue); // Cập nhật giá trị vào đối tượng values
-                                                }}
-                                                onInputChange={(event, newInputValue) => {
-                                                    form.setFieldValue('category', newInputValue); // Cập nhật giá trị vào đối tượng values khi nhập tay
-                                                }}
-                                                renderInput={(params) => <TextField {...params} label="Category" />}
-                                            />
-                                        )}
-                                    </Field>
+                                    <div className="my-2">
+                                        <Field name="category" >
+                                            {({ field, form }) => (
+                                                <Autocomplete
+                                                    {...field}
+                                                    id="free-solo-demo"
+                                                    freeSolo
+                                                    options={Category.map((option) => option.title)}
+                                                    onChange={(event, newValue) => {
+                                                        form.setFieldValue('category', newValue); // Cập nhật giá trị vào đối tượng values
+                                                    }}
+                                                    onInputChange={(event, newInputValue) => {
+                                                        form.setFieldValue('category', newInputValue); // Cập nhật giá trị vào đối tượng values khi nhập tay
+                                                    }}
+                                                    renderInput={(params) => <TextField {...params} label="Category" />}
+                                                />
+                                            )}
+                                        </Field>
 
-                                </div>
-                                <h5>Địa chỉ</h5>
-                                <hr />
-                                <div className="my-2">
-                                    <div className="row">
-                                        <div className="col-3"> <Field name="address"  >
-                                            {({ field, form }) => (
-                                                <div>
-                                                    <InputLabel htmlFor="address">Address</InputLabel>
-                                                    <Select
-                                                        {...field}
-                                                        id="address"
-                                                        value={field.value}
-                                                        onChange={(event) => {
-                                                            form.setFieldValue('address', event.target.value);
-                                                            handleProvincesChange(event, event.target.value, form);
-                                                        }}
-                                                    >
-                                                        {provinces.map((option) => (
-                                                            <MenuItem key={option.Name} value={option.Name}>
-                                                                {option.Name}
-                                                            </MenuItem>
-                                                        ))}
-                                                    </Select>
-                                                </div>
-                                            )}
-                                        </Field></div>
+                                    </div>
+                                    <h5>Địa chỉ</h5>
+                                    <hr />
+                                    <div className="my-2">
+                                        <div className="row">
+                                            <div className="col-3"> <Field name="address"  >
+                                                {({ field, form }) => (
+                                                    <div>
+                                                        <InputLabel htmlFor="address">Address</InputLabel>
+                                                        <Select
+                                                            {...field}
+                                                            id="address"
+                                                            value={field.value}
+                                                            onChange={(event) => {
+                                                                form.setFieldValue('address', event.target.value);
+                                                                handleProvincesChange(event, event.target.value, form);
+                                                            }}
+                                                        >
+                                                            {provinces.map((option) => (
+                                                                <MenuItem key={option.Name} value={option.Name}>
+                                                                    {option.Name}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </div>
+                                                )}
+                                            </Field></div>
 
-                                        <div className="col-3"> <Field name="district">
-                                            {({ field, form }) => (
-                                                <div>
-                                                    <InputLabel htmlFor="district">District</InputLabel>
-                                                    <Select
-                                                        {...field}
-                                                        id="district"
-                                                        value={field.value}
-                                                        onChange={(event) => {
-                                                            form.setFieldValue('district', event.target.value);
-                                                            handleDistrictChange(event, event.target.value, form);
-                                                        }}
-                                                    >
-                                                        {districts.map((district) => (
-                                                            <MenuItem key={district} value={district}>
-                                                                {district}
-                                                            </MenuItem>
-                                                        ))}
-                                                    </Select>
-                                                </div>
-                                            )}
-                                        </Field></div>
-                                        <div className="col-3"> <Field name="ward">
-                                            {({ field, form }) => (
-                                                <div>
-                                                    <InputLabel htmlFor="ward">Ward</InputLabel>
-                                                    <Select
-                                                        {...field}
-                                                        id="ward"
-                                                        value={field.value}
-                                                        onChange={(event) => {
-                                                            form.setFieldValue('ward', event.target.value);
-                                                        }}
-                                                    >
-                                                        {wards.map((ward) => (
-                                                            <MenuItem key={ward} value={ward}>
-                                                                {ward}
-                                                            </MenuItem>
-                                                        ))}
-                                                    </Select>
-                                                </div>
-                                            )}
-                                        </Field></div>
-                                        <div className="col-3 mt-4">
-                                            <Field className="form-control" name="numberAddress" as={TextField} label="Số nhà" variant="outlined" />
+                                            <div className="col-3"> <Field name="district">
+                                                {({ field, form }) => (
+                                                    <div>
+                                                        <InputLabel htmlFor="district">District</InputLabel>
+                                                        <Select
+                                                            {...field}
+                                                            id="district"
+                                                            value={field.value}
+                                                            onChange={(event) => {
+                                                                form.setFieldValue('district', event.target.value);
+                                                                handleDistrictChange(event, event.target.value, form);
+                                                            }}
+                                                        >
+                                                            {districts.map((district) => (
+                                                                <MenuItem key={district} value={district}>
+                                                                    {district}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </div>
+                                                )}
+                                            </Field></div>
+                                            <div className="col-3"> <Field name="ward">
+                                                {({ field, form }) => (
+                                                    <div>
+                                                        <InputLabel htmlFor="ward">Ward</InputLabel>
+                                                        <Select
+                                                            {...field}
+                                                            id="ward"
+                                                            value={field.value}
+                                                            onChange={(event) => {
+                                                                form.setFieldValue('ward', event.target.value);
+                                                            }}
+                                                        >
+                                                            {wards.map((ward) => (
+                                                                <MenuItem key={ward} value={ward}>
+                                                                    {ward}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </div>
+                                                )}
+                                            </Field></div>
+                                            <div className="col-3 mt-4">
+                                                <Field className="form-control" name="numberAddress" as={TextField} label="Số nhà" variant="outlined" />
+
+                                            </div>
 
                                         </div>
 
+
+                                    </div>
+                                    <hr />
+                                    <h5>Tiện ích phòng trọ </h5>
+
+                                    <div className="row">
+
+                                        <div className="my-2 col-4">
+                                            <Field inputProps={{ min: 0 }} className="" type="number" name="maxPeople" as={TextField} label="MaxPeople" variant="outlined" />
+
+                                        </div>
+
+                                        <div className="my-2 col-4">
+                                            <Field inputProps={{ min: 0 }} className="" type="number" name="price" as={TextField} label="Price/month" variant="outlined" />
+
+                                        </div>
+                                        <div className="my-2 col-4">
+                                            <Field inputProps={{ min: 0 }} className="" type="number" name="deposit" as={TextField} label="Deposit" variant="outlined" />
+
+                                        </div>
+                                    </div>
+
+                                    <div className="my-2">
+                                        <div className="col-3"> <Field name="security">
+                                            {({ field, form }) => (
+                                                <div>
+                                                    <Autocomplete
+                                                        multiple
+                                                        id="checkboxes-tags-demo"
+                                                        value={field.value.title} // nếu muốn lấy dưới dạng obj key : value thì là field.value
+
+                                                        options={Security}
+                                                        disableCloseOnSelect
+                                                        getOptionLabel={(option) => option.title}
+                                                        renderOption={(props, option, { selected }) => (
+                                                            <li {...props}>
+                                                                <Checkbox
+                                                                    icon={icon}
+                                                                    checkedIcon={checkedIcon}
+                                                                    style={{ marginRight: 8 }}
+                                                                    checked={selected}
+                                                                />
+                                                                {option.title}
+                                                            </li>
+                                                        )}
+                                                        style={{ width: 500 }}
+                                                        renderInput={(params) => (
+                                                            <TextField {...params} label="Security" placeholder="Security" />
+                                                        )}
+                                                        onChange={(event, values) => {
+                                                            const selectedValues = values.map(item => item.title);
+                                                            form.setFieldValue('security', selectedValues);
+                                                            // form.setFieldValue('security', values); khi mà muốn lấy dưới dạng obj
+
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+                                        </Field></div>
+                                    </div>
+                                    <div className="my-2">
+                                        <div className="col-3"> <Field name="interior">
+                                            {({ field, form }) => (
+                                                <div>
+                                                    <Autocomplete
+                                                        multiple
+                                                        // id="checkboxes-tags-demo"
+                                                        value={field.value.title} // nếu muốn lấy dưới dạng obj key : value thì là field.value
+                                                        options={Interior}
+                                                        disableCloseOnSelect
+                                                        getOptionLabel={(option) => option.title}
+                                                        renderOption={(props, option, { selected }) => (
+                                                            <li {...props}>
+                                                                <Checkbox
+                                                                    icon={icon}
+                                                                    checkedIcon={checkedIcon}
+                                                                    style={{ marginRight: 8 }}
+                                                                    checked={selected}
+                                                                />
+                                                                {option.title}
+                                                            </li>
+                                                        )}
+                                                        style={{ width: 500 }}
+                                                        renderInput={(params) => (
+                                                            <TextField {...params} label="Interior" placeholder="Interior" />
+                                                        )}
+                                                        onChange={(event, values) => {
+                                                            const selectedValues = values.map(item => item.title);
+                                                            form.setFieldValue('interior', selectedValues);
+                                                            // form.setFieldValue('interior', values); khi mà muốn lấy dưới dạng obj
+
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+                                        </Field></div>
+                                    </div>
+                                    <div className="my-2">
+                                        <div className="col-3"> <Field name="utils">
+                                            {({ field, form }) => (
+                                                <div>
+                                                    <Autocomplete
+                                                        multiple
+                                                        // id="checkboxes-tags-demo"
+                                                        value={field.value.title} // nếu muốn lấy dưới dạng obj key : value thì là field.value thôi 
+
+                                                        options={Utils}
+                                                        disableCloseOnSelect
+                                                        getOptionLabel={(option) => option.title}
+                                                        renderOption={(props, option, { selected }) => (
+                                                            <li {...props}>
+                                                                <Checkbox
+                                                                    icon={icon}
+                                                                    checkedIcon={checkedIcon}
+                                                                    style={{ marginRight: 8 }}
+                                                                    checked={selected}
+                                                                />
+                                                                {option.title}
+                                                            </li>
+                                                        )}
+                                                        style={{ width: 500 }}
+                                                        renderInput={(params) => (
+                                                            <TextField {...params} label="Utils" placeholder="Utils" />
+                                                        )}
+                                                        onChange={(event, values) => {
+                                                            const selectedValues = values.map(item => item.title);
+                                                            form.setFieldValue('utils', selectedValues);
+                                                            // form.setFieldValue('utils', values); khi mà muốn lấy dưới dạng obj 
+
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
+                                        </Field></div>
                                     </div>
 
 
-                                </div>
-                                <hr />
-                                <h5>Tiện ích phòng trọ </h5>
 
-                                <div className="row">
 
-                                    <div className="my-2 col-4">
-                                        <Field inputProps={{ min: 0 }} className="" type="number" name="maxPeople" as={TextField} label="MaxPeople" variant="outlined" />
 
+                                    <div className="my-2">
+                                        <button className="btn btn-success form-control" type="submit">Submit</button>
                                     </div>
 
-                                    <div className="my-2 col-4">
-                                        <Field inputProps={{ min: 0 }} className="" type="number" name="price" as={TextField} label="Price/month" variant="outlined" />
 
-                                    </div>
-                                    <div className="my-2 col-4">
-                                        <Field inputProps={{ min: 0 }} className="" type="number" name="deposit" as={TextField} label="Deposit" variant="outlined" />
 
-                                    </div>
                                 </div>
-
-                                <div className="my-2">
-                                    <div className="col-3"> <Field name="security">
-                                        {({ field, form }) => (
-                                            <div>
-                                                <Autocomplete
-                                                    multiple
-                                                    id="checkboxes-tags-demo"
-                                                    value={field.value.title} // nếu muốn lấy dưới dạng obj key : value thì là field.value
-
-                                                    options={Security}
-                                                    disableCloseOnSelect
-                                                    getOptionLabel={(option) => option.title}
-                                                    renderOption={(props, option, { selected }) => (
-                                                        <li {...props}>
-                                                            <Checkbox
-                                                                icon={icon}
-                                                                checkedIcon={checkedIcon}
-                                                                style={{ marginRight: 8 }}
-                                                                checked={selected}
-                                                            />
-                                                            {option.title}
-                                                        </li>
-                                                    )}
-                                                    style={{ width: 500 }}
-                                                    renderInput={(params) => (
-                                                        <TextField {...params} label="Security" placeholder="Security" />
-                                                    )}
-                                                    onChange={(event, values) => {
-                                                        const selectedValues = values.map(item => item.title);
-                                                        form.setFieldValue('security', selectedValues);
-                                                        // form.setFieldValue('security', values); khi mà muốn lấy dưới dạng obj
-
-                                                    }}
-                                                />
-                                            </div>
-                                        )}
-                                    </Field></div>
-                                </div>
-                                <div className="my-2">
-                                    <div className="col-3"> <Field name="interior">
-                                        {({ field, form }) => (
-                                            <div>
-                                                <Autocomplete
-                                                    multiple
-                                                    // id="checkboxes-tags-demo"
-                                                    value={field.value.title} // nếu muốn lấy dưới dạng obj key : value thì là field.value
-                                                    options={Interior}
-                                                    disableCloseOnSelect
-                                                    getOptionLabel={(option) => option.title}
-                                                    renderOption={(props, option, { selected }) => (
-                                                        <li {...props}>
-                                                            <Checkbox
-                                                                icon={icon}
-                                                                checkedIcon={checkedIcon}
-                                                                style={{ marginRight: 8 }}
-                                                                checked={selected}
-                                                            />
-                                                            {option.title}
-                                                        </li>
-                                                    )}
-                                                    style={{ width: 500 }}
-                                                    renderInput={(params) => (
-                                                        <TextField {...params} label="Interior" placeholder="Interior" />
-                                                    )}
-                                                    onChange={(event, values) => {
-                                                        const selectedValues = values.map(item => item.title);
-                                                        form.setFieldValue('interior', selectedValues);
-                                                        // form.setFieldValue('interior', values); khi mà muốn lấy dưới dạng obj
-
-                                                    }}
-                                                />
-                                            </div>
-                                        )}
-                                    </Field></div>
-                                </div>
-                                <div className="my-2">
-                                    <div className="col-3"> <Field name="utils">
-                                        {({ field, form }) => (
-                                            <div>
-                                                <Autocomplete
-                                                    multiple
-                                                    // id="checkboxes-tags-demo"
-                                                    value={field.value.title} // nếu muốn lấy dưới dạng obj key : value thì là field.value thôi 
-
-                                                    options={Utils}
-                                                    disableCloseOnSelect
-                                                    getOptionLabel={(option) => option.title}
-                                                    renderOption={(props, option, { selected }) => (
-                                                        <li {...props}>
-                                                            <Checkbox
-                                                                icon={icon}
-                                                                checkedIcon={checkedIcon}
-                                                                style={{ marginRight: 8 }}
-                                                                checked={selected}
-                                                            />
-                                                            {option.title}
-                                                        </li>
-                                                    )}
-                                                    style={{ width: 500 }}
-                                                    renderInput={(params) => (
-                                                        <TextField {...params} label="Utils" placeholder="Utils" />
-                                                    )}
-                                                    onChange={(event, values) => {
-                                                        const selectedValues = values.map(item => item.title);
-                                                        form.setFieldValue('utils', selectedValues);
-                                                        // form.setFieldValue('utils', values); khi mà muốn lấy dưới dạng obj 
-
-                                                    }}
-                                                />
-                                            </div>
-                                        )}
-                                    </Field></div>
-                                </div>
-
-
-
-
-
-                                <div className="my-2">
-                                    <button className="btn btn-success form-control" type="submit">Submit</button>
-                                </div>
-
-
-
                             </div>
-                        </div>
-                    </Form>
-                </Formik>
-            </div>
+                        </Form>
+                    </Formik>
+                </div>
+            )
+
+            }
+
         </div>
     );
 };

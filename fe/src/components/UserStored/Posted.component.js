@@ -106,7 +106,7 @@ const Posted = () => {
                                     <div className='user-link d-flex flex-column gap-2'>
                                         <div className='username'>{user.firstname}</div>
                                         <div className='list-button d-flex gap-2'>
-                                            <button className='btn btn-outline-danger'>Trang cá nhân</button>
+                                            <button className='btn btn-outline-danger' onClick={()=>{navigate("/profile")}}>Trang cá nhân</button>
                                             <Link to='/post/create' className='btn btn-outline-danger'>Đăng bài viết mới </Link>
                                         </div>
                                     </div>
