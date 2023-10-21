@@ -38,8 +38,8 @@ const Searchbox = ({datalocation}) => {
     { value: '50', label: '50' }
   ];
   const optionsPrice = [
-    { value: '1.000.000-3.000.000', label: '1.000.000-3.000.000' },
-    { value: '3.000.000-5.000.000', label: '3.000.000-5.000.000' }
+    { value: '1000000-3000000', label: '1000000-3000000' },
+    { value: '3000000-5000000', label: '3000000-5000000' }
   ];
 
   const optionsUtilities = [

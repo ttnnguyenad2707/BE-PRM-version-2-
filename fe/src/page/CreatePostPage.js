@@ -217,19 +217,19 @@ const CreatePostPage = () => {
         console.log(data);
 
 
-        // try {
-        //     const res = await createPost(data, token)
-        //     console.log("res from form", res);
-        //     toast.success(`Create success!`)
-        //      navigate("/stored/posted")
+        try {
+            const res = await createPost(data, token)
+            console.log("res from form", res);
+            toast.success(`Create success!`)
+             navigate("/stored/posted")
 
-        //     // const dataRespon = res?.data?.article
-        //     // navigate(`/article/${dataRespon.slug}`)
-        // } catch (error) {
-        //     console.log(error);
-        //     toast.danger(`Create fail!`)
+            // const dataRespon = res?.data?.article
+            // navigate(`/article/${dataRespon.slug}`)
+        } catch (error) {
+            console.log(error);
+            toast.danger(`Create fail!`)
 
-        // }
+        }
     }
     const validateForm = (values) => {
         const errors = {};

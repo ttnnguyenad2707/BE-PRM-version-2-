@@ -21,13 +21,20 @@ class PostService {
         const { } = req.body;
     }
     async getAll(req, res) {
+        const dataSize = await Post.find({ deleted: false })
         const currentPage = parseInt(req.params.currentPage);
         const perPage = 10;
+        const totalPages = Math.ceil(dataSize.length/perPage);
         const skip = (currentPage - 1) * perPage;
         const result = await Post.find({ deleted: false })
             .skip(skip)
             .limit(perPage).exec();
-        return res.status(200).json(result)
+
+        const data = {
+            data: result,
+            totalPages: totalPages,
+        }
+        return res.status(200).json(data)
     }
     async readPostWithQuantity(req, res) {
         const quantityOfPost = await req.query.number;
@@ -63,9 +70,10 @@ class PostService {
 
     async getSearchValue(req, res) {
         const searchParam = req.params.searchParam;
+        const dataSize  = await Post.find({ title: { $regex: searchParam, $options: 'i' } })
         const currentPage = parseInt(req.params.currentPage);
         const perPage = 10;
-
+        const totalPages = Math.ceil(3/10);
         try {
             const skip = (currentPage - 1) * perPage;
 
@@ -77,8 +85,11 @@ class PostService {
             if (result.length === 0) {
                 return res.status(404).json({ message: "No results found" });
             }
-
-            return res.status(200).json({ message: "Search result", data: result });
+            const data = {
+                data: result,
+                totalPages: totalPages,
+            }
+            return res.status(200).json({ message: "Search result", data: data });
         } catch (error) {
             return res.status(500).json({ error: error.message });
         }
