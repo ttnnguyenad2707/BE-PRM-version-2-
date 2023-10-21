@@ -1,9 +1,48 @@
+import { useNavigate, useParams } from 'react-router-dom'
 import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import images from '../../assets/images'
-import { GlobalOutlined,MessageOutlined,PhoneOutlined } from '@ant-design/icons'
-const PostDetails = () => {
+import { GlobalOutlined, MessageOutlined, PhoneOutlined,LoadingOutlined } from '@ant-design/icons'
+import { useEffect, useState } from 'react'
+import { getDetailPost, getPosterInfo } from '../../services/post.service'
+import moment from 'moment';
+import Map from '../Map/Map.component'
+
+const PostDetails =() => {
+    const { slug } = useParams();
+    const [postDetail, setPostDetail] = useState({})
+
+    const [posterInfo, setPosterInfo] = useState({})
+    const [isLoading, setIsLoading] = useState(true)
+    useEffect( () => {
+         getDetailPost(slug).then(data => setPostDetail(data.data));
+        
+    }, [])
+    
+    
+    useEffect(() => {
+        if (Object.keys(postDetail).length > 0) {
+          getPosterInfo(postDetail.owner).then(data => {
+            setPosterInfo(data.data);
+            setIsLoading(false);
+          });
+        }
+      }, [postDetail]);
+    useEffect(()=>{
+        if(postDetail!= {}){
+            setIsLoading(false);
+
+        }
+    },[postDetail])  
+    const navigate = useNavigate();
+    const handleLinkToProfile = (id) => {
+        navigate(`/user/${id}`);
+    }
+    
+
     return (
-        <div className='container'>
+        <>
+        {isLoading == false && (
+            <div className='container'>
             <div className='row'>
                 <div className='col-8'>
                     <div className='post-content'>
@@ -12,11 +51,11 @@ const PostDetails = () => {
 
                         </div>
                         <div className='post-info'>
-                            <h4 className='title'>Phòng trong nhà nghỉ nông trại chủ nhà Le</h4>
-                            <div className='price'> 2 triệu đồng / tháng  <span>25m2</span> </div>
+                            <h4 className='title'>{postDetail.title}</h4>
+                            <div className='price'> {postDetail.price} triệu đồng / tháng  <span>{postDetail.area}m2</span> </div>
                             <div className='d-flex gap-3'>
-                                <span> <GlobalOutlined /> Thôn 3 Thạch hòa-Hà nội</span>
-                                <span> Đăng ngày : 20-10-2023 </span>
+                                <span> <GlobalOutlined /> {postDetail.address}</span>
+                                <span> Đăng ngày : {moment(new Date(postDetail.createdAt)).format('DD/MM/YYYY')} </span>
                             </div>
 
                             <div className='room-info'>
@@ -24,21 +63,19 @@ const PostDetails = () => {
                                 <h4>Thông tin phòng trọ</h4>
                                 <div className='d-flex gap-3'>
                                     <ul>
-                                        <li>Diện tích: 25m2</li>
-                                        <li>An ninh : khóa vân tay , chung chủ ,PCCC</li>
-                                        <li>Nội thất :Tủ lạnh, điều hòa, tủ quần áo, tủ bát, số giường, bàn học </li>
+                                        <li>An ninh :{postDetail.security?.map(security => (<span>{security}, </span>))}</li>
+                                        <li>Nội thất:{postDetail.interior?.map(interior => (<span>{interior}, </span>))}</li>
 
                                     </ul>
                                     <ul>
-                                        <li>Tiện ích khác : máy giặt ,thang máy,hầm để xe</li>
-                                        <li>Tiền cọc : 10000 vnd</li>
-                                        <li>Số người tối đa : 4 người</li>
+                                        <li>Tiện ích khác : {postDetail.utils?.map(utils => (<span>{utils}, </span>))}</li>
+                                        <li>Tiền cọc : {postDetail.deposit} vnd</li>
+                                        <li>Số người tối đa : {postDetail.maxPeople} người</li>
                                     </ul>
 
                                 </div>
                                 <h4>Mô tả chi tiết</h4>
-                                <p>Nhà đẹp phân lô Mễ Trì, xây 7 tầng, thang máy, kinh doanh sầm uất, ô tô tránh, ngủ trong nhà Nhà hoàn thiện đẹp,
-                                    điều hòa âm trần, làm văn phòng kinh doanh kết hợp ở tuyệt vời</p>
+                                <p>{postDetail.description}</p>
                             </div>
                         </div>
                         <div className='room-address'>
@@ -54,7 +91,7 @@ const PostDetails = () => {
                                                 <img src={images.avatarDefault} alt='avatar' width="100%"></img>
                                             </div>
                                             <div className='user-info'>
-                                                <div>Nguyen Tran</div>
+                                                <div>Nguyen</div>
                                                 <div>20-10-2923</div>
                                             </div>
                                         </div>
@@ -73,10 +110,10 @@ const PostDetails = () => {
                     <div className='shadow p-3 mb-5 bg-body-tertiary rounded'>
                         <div className='poster-box d-flex align-items-center'>
                             <div className='d-flex gap-2'>
-                                <img src={images.avatarDefault} alt='avatar-poster' width="100%"/>
-                                <span>Nguyen Tran</span>
+                                <img src={images.avatarDefault} alt='avatar-poster' width="100%" />
+                                <span>{posterInfo.firstname} {posterInfo.lastname}</span>
                             </div>
-                            <button className='btn bt-primary'>Xem trang cá nhân</button>
+                            <button onClick={()=> handleLinkToProfile(posterInfo._id)} className='btn bt-primary'>Xem trang cá nhân</button>
                         </div>
                         <div className='contact-box d-flex gap-4 flex-column'>
                             <h4>Liên hệ với người cho thuê</h4>
@@ -88,13 +125,17 @@ const PostDetails = () => {
                                 <PhoneOutlined />
                                 Gọi 0943895292
                             </a>
-                            
+
                         </div>
                     </div>
                 </div>
 
             </div>
         </div>
+        )}
+        {isLoading == true && (<div className="text-center mt-5 fs-1"><LoadingOutlined /><div className='fs-2'>Loading ...</div> </div>)}
+        </>
+        
     )
 }
 

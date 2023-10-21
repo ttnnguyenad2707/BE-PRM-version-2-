@@ -1,16 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, Tooltip, Input, Space, Select, TreeSelect } from 'antd';
 import { SearchOutlined, CaretDownOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 const Searchbox = ({datalocation}) => {
   const [open, setOpen] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const locations = datalocation;
-  const nameLocation = [];
+  const navigate = useNavigate();
+  const location = [];
+  const price = [];
+  const area= [];
+  const amenities = [];
   const [modalText, setModalText] = useState('Content of the modal');
   const { Search } = Input;
-  const onSearch = (value, _e, info) => console.log(info?.source, value);
+  const onSearch = (value, _e, info) => {
+    setTimeout(() => {
+      setOpen(false);
+      setConfirmLoading(false);
+      navigate('/search', { state: { value } });
+    }, 500);
+  };
   let searchResult = "";
-  let category = [];
   let filter = [];
   const sumSearch = (value) => {
     searchResult.push(value);
@@ -37,18 +48,34 @@ const Searchbox = ({datalocation}) => {
     { value: 'Bình nóng lạnh', label: 'Bình nóng lạnh' },
     { value: 'Máy giặt', label: 'Máy giặt' }
   ];
-  const handleChange = (value) => {
+  const handleChange_location = (value) => {
     console.log(`selected ${value}`);
-    category.push(value);
+    location.push(value);
+  };
+
+  const handleChange_price = (value) => {
+    console.log(`selected ${value}`);
+    price.push(value);
+  };
+
+  const handleChange_area = (value) => {
+    console.log(`selected ${value}`);
+    area.push(value);
+  };
+
+  const handleChange_amenities = (value) => {
+    console.log(`selected ${value}`);
+    amenities.push(value);
   };
   const handleOk = () => {
-    filter.push(...category, searchResult);
-    console.log(filter, 'hay');
+    let category = [{address: location}, {price: price}, {amenities: amenities},{area: area}];
+    console.log(category);
     setModalText('The modal will be closed after two seconds');
     setConfirmLoading(true);
     setTimeout(() => {
       setOpen(false);
       setConfirmLoading(false);
+      navigate('/search', { state: { category: category } });
     }, 2000);
   };
   const handleCancel = () => {
@@ -89,14 +116,13 @@ const Searchbox = ({datalocation}) => {
               style={{
                 width: '50%',
               }}
-              onChange={handleChange}
               dropdownStyle={{
                 maxHeight: 400,
                 overflow: 'auto',
               }}
               treeData={locations}
               placeholder="Vị trí"
-              
+              onSelect={handleChange_location}
               allowClear
             />
             <Select
@@ -106,7 +132,7 @@ const Searchbox = ({datalocation}) => {
                 width: '50%',
               }}
               placeholder="Diện Tích"
-              onChange={handleChange}
+              onSelect={handleChange_area}
               options={optionsAcreage}
             />
           </div>
@@ -118,7 +144,7 @@ const Searchbox = ({datalocation}) => {
                 width: '50%',
               }}
               placeholder="Giá Tiền"
-              onChange={handleChange}
+              onSelect={handleChange_price}
               options={optionsPrice}
             />
             <Select
@@ -128,7 +154,7 @@ const Searchbox = ({datalocation}) => {
                 width: '50%',
               }}
               placeholder="Tiện Ích"
-              onChange={handleChange}
+              onSelect={handleChange_amenities}
               options={optionsUtilities}
             />
           </div>

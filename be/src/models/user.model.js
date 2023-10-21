@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 const User = new mongoose.Schema({
-    firstname:{
-        type:String,
+    firstname: {
+        type: String,
     },
-    lastname:{
-        type:String,
+    lastname: {
+        type: String,
     },
     email: {
         type: String,
@@ -22,15 +22,25 @@ const User = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
-    favoritePost:{
+    isVip: {
+
+        type: Boolean,
+        default: false
+    },
+    favoritePost: {
         type: [String],
     },
-    status:{
-        type:Boolean,
-        default:true,
+    status: {
+        type: Boolean,
+        default: true,
     },
     refreshToken:{
         type:String,
+    },
+    phone : {
+        type: Number,
+        minlength: 10,
+
     }
 }, { timestamps: true });
 module.exports = mongoose.model("User", User);
