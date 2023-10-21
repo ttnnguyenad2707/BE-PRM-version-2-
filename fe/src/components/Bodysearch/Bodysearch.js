@@ -5,13 +5,16 @@ import {
     EnvironmentOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-const Searchresult = ({ dataSource, currentPage, setCurrentPage, checkNext, checkPrev, totalPages }) => {
+const Searchresult = ({ dataSource, currentPage, setCurrentPage, checkNext, checkPrev, totalPages, addFavorite, removeFavorite, user }) => {
     const [favorite, setFavorite] = useState();
     const number = [];
     const data = dataSource;
     const numberPages = totalPages;
-    
-    for(let i = 1; i <= numberPages;i++){
+    let favoritePosts;
+    if (user != null) {
+        favoritePosts = user.favoritePost;
+    }
+    for (let i = 1; i <= numberPages; i++) {
         number.push(i);
     }
     const Checkclick = (id) => {
@@ -19,23 +22,26 @@ const Searchresult = ({ dataSource, currentPage, setCurrentPage, checkNext, chec
         var element = document.getElementById(id);
         if (element && element.className === "bi-heart") {
             element.className = "bi-heart-fill";
+            addFavorite(user._id, id)
         } else {
             element.className = "bi-heart";
+            removeFavorite(user._id, id)
         }
     };
     const navigate = useNavigate();
     const handleDetails = (slug) => {
         navigate(`/post/${slug}`)
     }
+    console.log(data);
     return (
         <>
             {data?.map((m) => {
                 return (
-                    <div onClick={() => handleDetails(m.slug)} className='Bodysearch d-flex flex-column gap-3'>
+                    <div className='Bodysearch d-flex flex-column gap-3'>
                         <div className='Card_search d-flex gap-4'>
                             <img src={m.images[0]} className='image-card' />
                             <div className='d-flex flex-column gap-4'>
-                                <h5>{m.title}</h5>
+                                <h5 onClick={() => handleDetails(m.slug)}>{m.title}</h5>
                                 <p>
                                     {m.area} mét vuông
                                 </p>
@@ -47,7 +53,15 @@ const Searchresult = ({ dataSource, currentPage, setCurrentPage, checkNext, chec
                                     <p>{m.address}</p>
                                 </div>
                             </div>
-                            <button className='btn-favorite d-flex mb-3 me-4' onClick={() => Checkclick(m._id)}><i className="bi-heart" id={m._id}> Save</i></button>
+                            {favoritePosts.includes(m._id) ? (
+                                <button className='btn-favorite d-flex mb-3 me-4' onClick={() => Checkclick(m._id)}>
+                                    <i className="bi-heart-fill" id={m._id}> Save</i>
+                                </button>
+                            ) : (
+                                <button className='btn-favorite d-flex mb-3 me-4' onClick={() => Checkclick(m._id)}>
+                                    <i className="bi-heart" id={m._id}> Save</i>
+                                </button>
+                            )}
                         </div>
                     </div>
                 );
