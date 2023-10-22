@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
 import './Bodysearch.scss'
 import {
     UserOutlined,
@@ -20,12 +21,19 @@ const Searchresult = ({ dataSource, currentPage, setCurrentPage, checkNext, chec
     const Checkclick = (id) => {
         console.log(id);
         var element = document.getElementById(id);
-        if (element && element.className === "bi-heart") {
-            element.className = "bi-heart-fill";
-            addFavorite(user._id, id)
-        } else {
-            element.className = "bi-heart";
-            removeFavorite(user._id, id)
+        if (user != null) {
+            if (element && element.className === "bi-heart") {
+                element.className = "bi-heart-fill";
+                addFavorite(user._id, id);
+                toast.success('Đã thêm vào yêu thích')
+            } else {
+                element.className = "bi-heart";
+                removeFavorite(user._id, id);
+                toast.warning('Đã gỡ bỏ yêu thích')
+            }
+        }
+        else{
+            toast.error('Hãy đăng nhập để sử dụng tiện tích này')
         }
     };
     const navigate = useNavigate();
@@ -53,15 +61,23 @@ const Searchresult = ({ dataSource, currentPage, setCurrentPage, checkNext, chec
                                     <p>{m.address}</p>
                                 </div>
                             </div>
-                            {favoritePosts.includes(m._id) ? (
-                                <button className='btn-favorite d-flex mb-3 me-4' onClick={() => Checkclick(m._id)}>
-                                    <i className="bi-heart-fill" id={m._id}> Save</i>
-                                </button>
-                            ) : (
-                                <button className='btn-favorite d-flex mb-3 me-4' onClick={() => Checkclick(m._id)}>
-                                    <i className="bi-heart" id={m._id}> Save</i>
-                                </button>
-                            )}
+                            {user != null ?
+                                (favoritePosts.includes(m._id) ? (
+                                    <button className='btn-favorite d-flex mb-3 me-4' onClick={() => Checkclick(m._id)}>
+                                        <i className="bi-heart-fill" id={m._id}> Save</i>
+                                    </button>
+                                ) : (
+                                    <button className='btn-favorite d-flex mb-3 me-4' onClick={() => Checkclick(m._id)}>
+                                        <i className="bi-heart" id={m._id}> Save</i>
+                                    </button>
+                                ))
+                                :
+                                (
+                                    <button className='btn-favorite d-flex mb-3 me-4' onClick={() => Checkclick(m._id)}>
+                                        <i className="bi-heart" id={m._id}> Save</i>
+                                    </button>
+                                )
+                            }
                         </div>
                     </div>
                 );
