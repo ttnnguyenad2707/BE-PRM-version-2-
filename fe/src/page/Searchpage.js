@@ -1,12 +1,13 @@
 import Footer from "../components/Footer/Footer.js";
 import Searchresult from "../components/Bodysearch/Bodysearch.js";
-import { useLocation } from 'react-router-dom';
+import { useLocation,useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { searchPost,getPostfilter,getAllPost } from "../services/post.service.js";
+import { searchPost,getPostfilter,getAllPost,addPostfavourite,removePostfavourite } from "../services/post.service.js";
 const SearchResultpage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [data, setData] = useState();
     const [totalPages, setTotalPages]= useState();
+    const [user, setUser] = useOutletContext();
     const location = useLocation();
     const value = location.state?.value;
     const category = location.state?.category;
@@ -55,6 +56,21 @@ const SearchResultpage = () => {
         } catch (error) {
         }
     }
+
+    const addPostfavourites = async (userId, idPost) => {
+        try {
+            const posts = (await addPostfavourite(userId, idPost));
+        } catch (error) {
+            
+        }
+    }
+    const removePostfavourites = async (userId, idPost) => {
+        try {
+            const posts = (await removePostfavourite(userId, idPost));
+        } catch (error) {
+            
+        }
+    }
     useEffect(()=> {
         if(value!= null){
             getDataSearch();
@@ -62,18 +78,21 @@ const SearchResultpage = () => {
         else if(category!=null){
             getDatafilter();
         }
-        else if(listpage!=null){
+        else if(listpage!=null && listpage == 'list page'){
+            getData();
+        }
+        else if(listpage!=null && listpage == 'favorite page'){
             getData();
         }
     },[currentPage, value, category,listpage])
-
-    console.log(data)
     return (
 
         <>
             <div className="container mt-3 mb-3">
                 <div className="row gap-4">
-                    <Searchresult totalPages={totalPages} currentPage={currentPage} setCurrentPage={checkCurrentpage} checkNext={checkNext} checkPrev={checkPrev} dataSource={data} />
+                    <Searchresult totalPages={totalPages} currentPage={currentPage} setCurrentPage={checkCurrentpage} 
+                    checkNext={checkNext} checkPrev={checkPrev} dataSource={data} addFavorite={addPostfavourites} user={user} 
+                    removeFavorite={removePostfavourites}/>
                 </div>
             </div>
             <div>
