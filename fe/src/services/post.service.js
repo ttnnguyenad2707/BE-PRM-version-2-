@@ -36,10 +36,12 @@ export const createPost = async (data,token) => {
         }
     })
 }
+// updateOne
+
 
 export const getPostedById = async (id) => {
 const token = Cookies.get('accessToken');
-
+console.log("id",id);
     return await axios.get(`${URL_SERVER}/post/${id}`,{ 
         withCredentials: true,
 
@@ -60,10 +62,10 @@ export const deletePost = async (id) => {
     })
 }
 
-export const editPost = async (id) => {
-const token = Cookies.get('accessToken');
+export const editPost = async (id,data,token) => {
+// const token = Cookies.get('accessToken');
 
-    return await axios.put(`${URL_SERVER}/post/${id}`,{ 
+    return await axios.put(`${URL_SERVER}/post/${id}`,data,{ 
         withCredentials: true,
 
         headers: {

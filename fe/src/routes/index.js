@@ -53,7 +53,7 @@ export const appRoutes = createBrowserRouter([
                 element: <Posted />
             },
             {
-                path: '/stored/posted/:id',
+                path: '/stored/posted/:slug',
                 element: <PostEdit />
             },
             {

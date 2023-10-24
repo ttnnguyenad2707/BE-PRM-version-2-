@@ -39,10 +39,10 @@ module.exports = {
         const post = await PostService.getPostedById(req, res);
     }),
     getDetail: asyncHandler(async (req, res) => {
-        post = await PostService.getDetail(req, res);
+       const post = await PostService.getDetail(req, res);
     }),
     getSearchValue: asyncHandler(async (req, res) => {
-        post = await PostService.getSearchValue(req, res);
+       const post = await PostService.getSearchValue(req, res);
     }),
     getLandingPost: asyncHandler(async (req, res) => {
         const post = await PostService.getLandingPost(req, res);
