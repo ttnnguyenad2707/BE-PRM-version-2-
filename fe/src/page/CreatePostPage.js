@@ -166,10 +166,12 @@ const CreatePostPage = () => {
             if (!districtList.includes(form.values.district)) {
                 form.setFieldValue('district', '');
                 //Xóa giá trị trên form của trường "district" nếu không thuộc danh sách districtList
-                form.setFieldValue('ward', '');
-                form.setFieldValue('numberAddress', '');
+                form.setFieldValue('numberAddress', '');// khi provinces thay đổi thì numberAddress = ""
             }
             setDistricts(districtList);
+            setWards([]);// khi provinces thay đổi thì ward = ""
+
+          
 
         }
 

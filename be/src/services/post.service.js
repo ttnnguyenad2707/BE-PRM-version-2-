@@ -18,8 +18,24 @@ class PostService {
     }
 
     async updateOne(req, res) {
-        const { } = req.body;
-    }
+        const postId = req.params.id; // Lấy id của bài viết cần cập nhật từ request
+      
+        try {
+          const result = await Post.findByIdAndUpdate(req.params.id, { ...req.body });
+           const updatedPostData = await Post.findById(req.params.id);
+          
+      
+          if (!result) {
+            // Nếu không tìm thấy bài viết với id tương ứng, trả về thông báo lỗi
+            return res.status(404).json({ error: 'Bài viết không tồn tại.' });
+          }
+      
+          return res.status(200).json(updatedPostData);
+        } catch (error) {
+          res.status(500).json({ error: error.toString() });
+        }
+      }
+
     async getAll(req, res) {
         const dataSize = await Post.find({ deleted: false })
         const currentPage = parseInt(req.params.currentPage);
