@@ -89,7 +89,7 @@ class PostService {
         const dataSize  = await Post.find({ title: { $regex: searchParam, $options: 'i' } })
         const currentPage = parseInt(req.params.currentPage);
         const perPage = 10;
-        const totalPages = Math.ceil(3/10);
+        const totalPages = Math.ceil(dataSize.length/perPage);
         try {
             const skip = (currentPage - 1) * perPage;
 

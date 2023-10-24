@@ -343,10 +343,8 @@ const PostEdit = () => {
 
             console.log("res from update", res);
             toast.success(`update success!`)
-            //  navigate("/stored/posted")
+              navigate(`/post/${stateData.slug}`)
 
-            // const dataRespon = res?.data?.article
-            // navigate(`/article/${dataRespon.slug}`)
         } catch (error) {
             console.log(error);
             toast.danger(`Create fail!`)

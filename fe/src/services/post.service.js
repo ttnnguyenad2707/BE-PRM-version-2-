@@ -157,3 +157,35 @@ console.log(address,area,price,utils,currentPage,'day la services');
         }
     })
 }
+
+export const addPostfavourite = async (userId, idPost) => {
+    const token = Cookies.get('accessToken');
+    console.log(userId, idPost,'day la services');
+    
+        return await axios.put(`${URL_SERVER}/post/favorites`,{
+            userId: userId,
+            idPost: idPost,
+        },{ 
+            withCredentials: true,
+    
+            headers: {
+                token: `Bearer ${token}`,
+            }
+        })
+    }
+
+    export const removePostfavourite = async (userId, idPost) => {
+        const token = Cookies.get('accessToken');
+        console.log(userId, idPost,'day la services');
+        
+            return await axios.put(`${URL_SERVER}/post/favorites/Removefavorites`,{
+                userId: userId,
+                idPost: idPost,
+            },{ 
+                withCredentials: true,
+        
+                headers: {
+                    token: `Bearer ${token}`,
+                }
+            })
+        }

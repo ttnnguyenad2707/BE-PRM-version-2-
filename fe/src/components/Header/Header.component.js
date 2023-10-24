@@ -75,7 +75,13 @@ const Headercomponent = () => {
     };
 
     const checkClickItem = (a) => {
-        navigate('/search', { state: { listpage: "list page" } });
+        if(a.key == '1'){
+            navigate('/search', { state: { listpage: "list page" } });
+        }
+        else if(a.key == '2'){
+            navigate('/search', { state: { listpage: "favorite page" } });
+        }
+        
     }
     const fetchLocation = async () => {
         try {
