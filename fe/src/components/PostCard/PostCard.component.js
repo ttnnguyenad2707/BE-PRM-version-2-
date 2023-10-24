@@ -11,7 +11,6 @@ const PostCard = ({post}) => {
     const displayDetails = (slug) => {
         navigate(`/post/${slug}`);
     }
-
     return (
         <Card
             hoverable

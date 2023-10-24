@@ -38,7 +38,7 @@ const Landingpage = () => {
     };
     const getData = async () => {
         try {
-            const posts = (await getAllPost(1)).data;
+            const posts = (await getAllPost(1)).data.data;
             setData(posts);
         } catch (error) {
 

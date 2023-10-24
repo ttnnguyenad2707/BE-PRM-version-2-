@@ -25,6 +25,7 @@ module.exports = {
     }),
     validatePUT: asyncHandler(async (req, res, next) => {
         await Joi.object({
+            category: Joi.string().not(null).required(),
             title: Joi.string().not(null).required(),
             description: Joi.string().allow(null, ''),
             address: Joi.string()
@@ -38,6 +39,8 @@ module.exports = {
             utils:Joi.array().items(Joi.string()),
             interior:Joi.array().items(Joi.string()),
             images:Joi.array().items(Joi.string()),
+            owner:Joi.string().not(null).required(),
+
 
         }).validateAsync(req.body, { abortEarly: false });
 

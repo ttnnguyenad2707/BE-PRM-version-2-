@@ -32,6 +32,8 @@ const Posted = () => {
     console.log(user);
     const [activeTab, setActiveTab] = useState('1');
     const [dataPosted, setDataPosted] = useState([]);
+    console.log("dataPosted",dataPosted);
+
     const [dataDeleted, setDataDeleted] = useState([]);
     const [isOpenModal, setIsOpenModal] = useState(false)
     const [postId, setPostId] = useState('');
@@ -62,8 +64,9 @@ const Posted = () => {
     }
 
 
-    const handleEdit = (id) => {
-        navigate(`${id}`);
+    const handleEdit = (slug,record) => {
+        console.log("record",record);
+        navigate(`${slug}`,{state: record});
 
     }
 
@@ -135,7 +138,7 @@ const Posted = () => {
                                             <Column title="Số người" dataIndex="maxPeople" key="maxPeople" />
                                             <Column title="Action" key="action" render={(_, record) => (
                                                 <Space size="middle">
-                                                    <a className="btn btn-outline-info" onClick={() => handleEdit(record._id)}>Edit</a>
+                                                    <a className="btn btn-outline-info" onClick={() => handleEdit(record.slug,record)}>Edit</a>
                                                     <a className="btn btn-outline-danger" onClick={() => handleDelete(record._id)}>Delete</a>
                                                 </Space>
                                             )} />

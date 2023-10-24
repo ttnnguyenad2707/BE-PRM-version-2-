@@ -27,7 +27,7 @@ export const getPostedStore = async (type,token1) => {
     }
 }
 export const createPost = async (data,token) => {
-    
+    console.log(data, "created");
     return await axios.post(`${URL_SERVER}/post/`,data,{
         withCredentials: true,
         
@@ -36,10 +36,12 @@ export const createPost = async (data,token) => {
         }
     })
 }
+// updateOne
+
 
 export const getPostedById = async (id) => {
 const token = Cookies.get('accessToken');
-
+console.log("id",id);
     return await axios.get(`${URL_SERVER}/post/${id}`,{ 
         withCredentials: true,
 
@@ -60,10 +62,10 @@ export const deletePost = async (id) => {
     })
 }
 
-export const editPost = async (id) => {
-const token = Cookies.get('accessToken');
+export const editPost = async (id,data,token) => {
+// const token = Cookies.get('accessToken');
 
-    return await axios.put(`${URL_SERVER}/post/${id}`,{ 
+    return await axios.put(`${URL_SERVER}/post/${id}`,data,{ 
         withCredentials: true,
 
         headers: {
@@ -138,6 +140,7 @@ const token = Cookies.get('accessToken');
 
 export const getPostfilter = async (address,area,price,utils,currentPage) => {
 const token = Cookies.get('accessToken');
+console.log(address,area,price,utils,currentPage,'day la services');
 
     return await axios.post(`${URL_SERVER}/post/search/filter`,{ 
         withCredentials: true,
@@ -154,3 +157,35 @@ const token = Cookies.get('accessToken');
         }
     })
 }
+
+export const addPostfavourite = async (userId, idPost) => {
+    const token = Cookies.get('accessToken');
+    console.log(userId, idPost,'day la services');
+    
+        return await axios.put(`${URL_SERVER}/post/favorites`,{
+            userId: userId,
+            idPost: idPost,
+        },{ 
+            withCredentials: true,
+    
+            headers: {
+                token: `Bearer ${token}`,
+            }
+        })
+    }
+
+    export const removePostfavourite = async (userId, idPost) => {
+        const token = Cookies.get('accessToken');
+        console.log(userId, idPost,'day la services');
+        
+            return await axios.put(`${URL_SERVER}/post/favorites/Removefavorites`,{
+                userId: userId,
+                idPost: idPost,
+            },{ 
+                withCredentials: true,
+        
+                headers: {
+                    token: `Bearer ${token}`,
+                }
+            })
+        }

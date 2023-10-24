@@ -166,10 +166,12 @@ const CreatePostPage = () => {
             if (!districtList.includes(form.values.district)) {
                 form.setFieldValue('district', '');
                 //Xóa giá trị trên form của trường "district" nếu không thuộc danh sách districtList
-                form.setFieldValue('ward', '');
-                form.setFieldValue('numberAddress', '');
+                form.setFieldValue('numberAddress', '');// khi provinces thay đổi thì numberAddress = ""
             }
             setDistricts(districtList);
+            setWards([]);// khi provinces thay đổi thì ward = ""
+
+          
 
         }
 
@@ -217,19 +219,19 @@ const CreatePostPage = () => {
         console.log(data);
 
 
-        // try {
-        //     const res = await createPost(data, token)
-        //     console.log("res from form", res);
-        //     toast.success(`Create success!`)
-        //      navigate("/stored/posted")
+        try {
+            const res = await createPost(data, token)
+            console.log("res from form", res);
+            toast.success(`Create success!`)
+             navigate("/stored/posted")
 
-        //     // const dataRespon = res?.data?.article
-        //     // navigate(`/article/${dataRespon.slug}`)
-        // } catch (error) {
-        //     console.log(error);
-        //     toast.danger(`Create fail!`)
+            // const dataRespon = res?.data?.article
+            // navigate(`/article/${dataRespon.slug}`)
+        } catch (error) {
+            console.log(error);
+            toast.danger(`Create fail!`)
 
-        // }
+        }
     }
     const validateForm = (values) => {
         const errors = {};
