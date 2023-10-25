@@ -93,7 +93,7 @@ class PostService {
         try {
             const skip = (currentPage - 1) * perPage;
 
-            const result = await Post.find({ title: { $regex: searchParam, $options: 'i' } })
+            const result = await Post.find({ title: { $regex: searchParam, $options: 'i' ,deleted: false} })
                 .skip(skip)
                 .limit(perPage)
                 .exec();
@@ -178,7 +178,7 @@ class PostService {
             if (utils && Array.isArray(utils) && utils.length > 0) {
                 query.utils = { $all: utils };
             }
-
+            query.deleted = false
             const result = await Post.find(query)
                 .skip(skip)
                 .limit(perPage)
@@ -240,7 +240,44 @@ class PostService {
             return res.status(500).json(error.message);
         }
     }
-
+    async sortByCreateDate(req,res){
+        try {
+            const dataSize = await Post.find({ deleted: false })
+            const currentPage = parseInt(req.params.currentPage);
+            const perPage = 10;
+            const totalPages = Math.ceil(dataSize.length/perPage);
+            const skip = (currentPage - 1) * perPage;
+            const result = await Post.find().sort({ createdAt: -1,deleted: false })
+            .skip(skip)
+            .limit(perPage).exec();
+            return res.status(200).json({
+                message: "get sorted by createDate post success",
+                data: result,
+                totalPage: totalPages
+            });
+        } catch (error) {
+            return res.status(500).json({ error: error.toString() });
+        }
+    }
+    async sortByPrice(req,res){
+        try {
+            const dataSize = await Post.find({ deleted: false })
+            const currentPage = parseInt(req.params.currentPage);
+            const perPage = 10;
+            const totalPages = Math.ceil(dataSize.length/perPage);
+            const skip = (currentPage - 1) * perPage;
+            const result = await Post.find().sort({ price: -1 , deleted: false})
+            .skip(skip)
+            .limit(perPage).exec();
+            return res.status(200).json({
+                message: "get sorted post by price success",
+                data: result,
+                totalPage: totalPages
+            });
+        } catch (error) {
+            return res.status(500).json({ error: error.toString() });
+        }
+    }
 }
 
 module.exports = new PostService();
