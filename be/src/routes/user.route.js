@@ -4,7 +4,8 @@ const {validatePUT}=require('../validations/user.validate');
 const {verifyToken,verifyTokenAdmin}=require("../middlewares/verifyToken.middleware");
 
 router.get('/:userId',UserController.getOne)
-router.get('/getlistusers/:currentPage',verifyTokenAdmin,UserController.getUserlist)
+router.get('/getlistusers/:currentPage',verifyTokenAdmin,UserController.getUserlist);
+router.put('/:id',verifyToken,validatePUT, UserController.updateOne);
 router.put('/role/:id',verifyTokenAdmin, UserController.updateOneForAdmin);
 router.put('/upRole/:id',verifyTokenAdmin, UserController.upDateRole);
 router.put('/decreseRole/:id',verifyTokenAdmin, UserController.upDateRole);
