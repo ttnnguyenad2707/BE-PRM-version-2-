@@ -53,24 +53,73 @@ class UserService {
     // get user list (admin page)
     async getUserlist(req,res){
         try {
-            const result= await User.find();
-            return res.status(201).json({"message":"Update successfully","data":result});
+            const dataSize = await User.find()
+            const currentPage = parseInt(req.params.currentPage);
+            const perPage = 10;
+            const totalPages = Math.ceil(dataSize.length/perPage);
+            const skip = (currentPage - 1) * perPage;
+            const result= await User.find().skip(skip)
+            .limit(perPage).exec();;
+            return res.status(201).json({"message":"get all user successfully","data":result,totalPage : totalPages});
         } catch (error) {
             return res.status(501).json({"error":error.message});
         }
     }
     async updateRole(req,res){
-        const Id = req.body;
+        const Id = req.params.id;
         try {
             const result= await User.findByIdAndUpdate({_id: Id}, {admin: true});
-            return res.status(202).json({"message":"Update successfully","data":result});
+            return res.status(202).json(
+                {
+                    "message":"Update successfully",
+                    "data":await User.find({_id: Id})
+                })
         } catch (error) {
             return res.status(502).json({"error":error.message});
         }
     }
 
-    
+    async decreseRole(req,res){
+        const Id = req.params.id;
+        try {
+            const result= await User.findByIdAndUpdate({_id: Id}, {admin: false});
+            return res.status(202).json(
+                {
+                    "message":"Update successfully",
+                    "data":await User.find({_id: Id})
+                })
+        } catch (error) {
+            return res.status(502).json({"error":error.message});
+        }
+    }
 
+    async blockUser(req,res){
+        const Id = req.params.id;
+        try {
+            const result= await User.findByIdAndUpdate({_id: Id}, {status: false});
+            return res.status(202).json(
+                {
+                    "message":"block user successfully",
+                    "data":await User.find({_id: Id})
+                })
+        } catch (error) {
+            return res.status(502).json({"error":error.message});
+        }
+    }
+    
+    async openUser(req,res){
+        const Id = req.params.id;
+        try {
+            const result= await User.findByIdAndUpdate({_id: Id}, {status: true});
+            return res.status(202).json(
+                {
+                    "message":"open user successfully",
+                    "data":await User.find({_id: Id})
+                })
+        } catch (error) {
+            return res.status(502).json({"error":error.message});
+        }
+    }
 }
 
 module.exports = new UserService();

@@ -7,6 +7,8 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 router.post('/',verifyToken,validatePOST, PostController.createOne);
 router.get('/getlandingPost',PostController.getLandingPost);
+router.get('/getSortByCreateDatePost/:currentPage',PostController.getSortByCreateDateProst);
+router.get('/getSortByPricePost/:currentPage',PostController.getSortByPriceProst);
 router.put('/favorites',verifyToken,PostController.favoritePost);
 router.put('/favorites/Removefavorites',verifyToken,PostController.RemovefavoritePost);
 router.put('/:id',verifyToken,validatePUT, PostController.updateOne);
