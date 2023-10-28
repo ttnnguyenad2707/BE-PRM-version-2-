@@ -25,7 +25,7 @@ const Profile = () => {
     useEffect(() => {
         if (user) {
             setIsLoading(false);
-            console.log("chya vao effect");
+            // console.log("chya vao effect");
         }
 
     }, [user,]);
@@ -48,7 +48,7 @@ const Profile = () => {
         try {
             const res = await updateUser(token, userID, values)
             const data = res.data.data
-            console.log("data", data);
+            // console.log("data", data);
             setUser(data)
             setIsEditMode(false)
             toast.success(res.data.message)

@@ -9,3 +9,12 @@ export const updateUser = async (token,id,data) => {
         }
     })
 }
+export const changePassword = async (token,id,data) => {
+    return await axios.put(`${URL_SERVER}/user/changePassword/${id}`,data, {
+        withCredentials: true,
+        
+        headers: {
+            token: `Bearer ${token}`,
+        }
+    })
+}

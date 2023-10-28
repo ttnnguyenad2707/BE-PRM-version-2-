@@ -163,7 +163,7 @@ const Headercomponent = () => {
                             <p className='number-notification'>1</p>
                         </button>
                         {/* {user ? <a className='login'> {user.lastname}</a> : <a className='login'>Đăng nhập</a>} */}
-                        {user && user.lastname ? (
+                        {token && user ? (
                             <NavLink className='login d-flex flex-column justify-content-center' style={{ color: '#E66D4F' }}>
                                 <UserOutlined style={{ color: '#E66D4F', fontSize: '30px' }} />
                                 {user.lastname}
