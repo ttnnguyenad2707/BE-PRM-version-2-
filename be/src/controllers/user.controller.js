@@ -28,6 +28,10 @@ module.exports = {
     }),
     openUser: asyncHandler(async(res,req)=>{
         const user = await UserService.openUser(res,req);
-    })
+    }),
+    changePassword: asyncHandler(async(res,req)=>{
+        const user = await UserService.changePassword(res,req);
+    }),
+
 
 };
