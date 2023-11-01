@@ -57,11 +57,13 @@ export default function ChatContainer({ currentChat, socket }) {
         setArrivalMessage({ fromSelf: false, message: msg });
       });
     }
-  }, []);
+  }, [user, currentChat]);
+
+
 
   useEffect(() => {
     arrivalMessage && setMessages((prev) => [...prev, arrivalMessage]);
-  }, [arrivalMessage]);
+  }, [arrivalMessage, user, currentChat]);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -123,7 +125,7 @@ const Container = styled.div`
       }
       .username {
         h3 {
-          color: white;
+          color: #e66c4e;
         }
       }
     }
@@ -160,13 +162,16 @@ const Container = styled.div`
     .sended {
       justify-content: flex-end;
       .content {
-        background-color: #4f04ff21;
+        background-color: #e66c4e;
+        color: white;
       }
+      
     }
     .recieved {
       justify-content: flex-start;
       .content {
-        background-color: #9900ff20;
+        background-color: #e66c4e;
+        color: white;
       }
     }
   }

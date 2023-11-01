@@ -16,7 +16,7 @@ const Headercomponent = () => {
     const [user, setUser] = useState(null);
     const [location, setLocation] = useState();
     const navigate = useNavigate()
- 
+
     useEffect(() => {
         if (!token) {
             navigate('/');
@@ -36,7 +36,7 @@ const Headercomponent = () => {
             });
 
     }, [token, navigate,]);
- 
+
 
     const [selectedKeys, setSelectedKeys] = useState([]);
     const { Search } = Input;
@@ -75,13 +75,13 @@ const Headercomponent = () => {
     };
 
     const checkClickItem = (a) => {
-        if(a.key == '1'){
+        if (a.key == '1') {
             navigate('/search', { state: { listpage: "list page" } });
         }
-        else if(a.key == '2'){
+        else if (a.key == '2') {
             navigate('/search', { state: { listpage: "favorite page" } });
         }
-        
+
     }
     const fetchLocation = async () => {
         try {
@@ -92,10 +92,10 @@ const Headercomponent = () => {
                 children: item.Districts ? item.Districts.map(child => ({
                     title: child.Name,
                     value: child.Name,
-                    children: child.Wards? child.Wards.map(wards => ({
+                    children: child.Wards ? child.Wards.map(wards => ({
                         title: wards.Name,
                         value: wards.Name,
-                    })):[]
+                    })) : []
                 })) : []
             }));
 
@@ -158,8 +158,8 @@ const Headercomponent = () => {
                             </div>
                         </button>
                         <button className='btn-mess position-relative'>
-                            <Link to={'/chat'}>abcd</Link>
-                            <MessageOutlined style={{ fontSize: '30px', color: '#e25e3e' }} />
+                            <Link to={'/chat'}><MessageOutlined style={{ fontSize: '30px', color: '#e25e3e' }} /></Link>
+
                             <p className='number-notification'>1</p>
                         </button>
                         {/* {user ? <a className='login'> {user.lastname}</a> : <a className='login'>Đăng nhập</a>} */}

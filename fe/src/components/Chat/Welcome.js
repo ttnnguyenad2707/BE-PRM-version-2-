@@ -37,6 +37,10 @@ const Container = styled.div`
     height: 20rem;
   }
   span {
-    color: #4e0eff;
+    color: #e66c4e;
+    font-weight: bold;
+  }
+  h1,h3{
+    color: #e66c4e;
   }
 `;

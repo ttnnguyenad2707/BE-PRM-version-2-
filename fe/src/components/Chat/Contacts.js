@@ -1,48 +1,88 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
+import { allContactsRoute, allUsersRoute } from "../../services/conversation.service";
 import styled from "styled-components";
+import axios from "axios";
 
-export default function Contacts({ contacts, changeChat }) {
+export default function Contacts({ changeChat }) {
   const [user] = useOutletContext();
-
+  const [allUser, setAllUser] = useState([]);
   const [currentUserName, setCurrentUserName] = useState(undefined);
   const [currentSelected, setCurrentSelected] = useState(undefined);
+  const [selectedUser, setSelectedUser] = useState("");
+  const [contacts, setContacts] = useState([]);
+
+
+  useEffect(() => {
+    async function fetchData() {
+      if (user) {
+        try {
+          const response = await axios.get(`${allUsersRoute}/${user?._id}`);
+          setAllUser(response.data);
+        } catch (error) {
+          console.log("Không thể lấy danh sách người dùng");
+        }
+      }
+    }
+
+    fetchData();
+  }, [user]);
 
   useEffect(() => {
     async function fetchData() {
       try {
         setCurrentUserName(user?.lastname);
       } catch (error) {
-        console.log("loi lay username");
+        console.log("Lỗi khi lấy tên người dùng");
       }
     }
     fetchData();
   }, [user]);
 
-  // useEffect(() => {
-  //   if (user)
-  //     console.log("name: " + user);
-  // }, [user]);
-
   const changeCurrentChat = (index, contact) => {
     setCurrentSelected(index);
     changeChat(contact);
   };
+
+  const handleUserSelect = async (event) => {
+    const selectedUserId = event.target.value;
+    setSelectedUser(selectedUserId);
+    const selectedUser = allUser.find((user) => user._id === selectedUserId);
+    if (selectedUser) {
+      changeChat(selectedUser);
+    }
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      if (user) {
+        try {
+          const data = await axios.get(`${allContactsRoute}/${user?._id}`);
+          setContacts(data.data);
+          // console.log("contact123: " + contacts);
+        } catch (error) {
+          console.log("k lay dc contact");
+        }
+      }
+    }
+
+    fetchData();
+  }, [user, contacts]);
+
+
   return (
     <>
-      {(
+      {allUser.length > 0 && (
         <Container>
           <div className="brand">
-            <h3>Chatting</h3>
+            <h3>Contacts</h3>
           </div>
           <div className="contacts">
-
             {contacts.map((contact, index) => {
               return (
                 <div
                   key={contact._id}
-                  className={`contact ${index === currentSelected ? "selected" : ""
-                    }`}
+                  className={`contact ${index === currentSelected ? "selected" : ""}`}
                   onClick={() => changeCurrentChat(index, contact)}
                 >
                   <div className="username">
@@ -62,11 +102,14 @@ export default function Contacts({ contacts, changeChat }) {
     </>
   );
 }
+
 const Container = styled.div`
+
+
   display: grid;
   grid-template-rows: 10% 75% 15%;
   overflow: hidden;
-  background-color: #080420;
+  background-color: #fae9d5;
   .brand {
     display: flex;
     align-items: center;
@@ -76,7 +119,7 @@ const Container = styled.div`
       height: 2rem;
     }
     h3 {
-      color: white;
+      color: #e66c4e;
       text-transform: uppercase;
     }
   }
@@ -89,13 +132,14 @@ const Container = styled.div`
     &::-webkit-scrollbar {
       width: 0.2rem;
       &-thumb {
-        background-color: #ffffff39;
+        background-color: #fae9d5;
         width: 0.1rem;
         border-radius: 1rem;
       }
     }
+
     .contact {
-      background-color: #ffffff34;
+      background-color: #fae9d5;
       min-height: 5rem;
       cursor: pointer;
       width: 90%;
@@ -112,17 +156,33 @@ const Container = styled.div`
       }
       .username {
         h3 {
+          color: #e66c4e;
+        }
+      }
+      
+    }
+    .selected {
+      background-color: #e66c4e;
+      .username {
+        h3{
           color: white;
         }
       }
     }
-    .selected {
-      background-color: #9a86f3;
+    
+  }
+  .contact:hover {
+    background-color: #e66c4e;
+    .username {
+      h3{
+        color: white;
+      }
     }
   }
 
+
   .current-user {
-    background-color: #0d0d30;
+    background-color: #e66c4e;
     display: flex;
     justify-content: center;
     align-items: center;
