@@ -17,6 +17,21 @@ module.exports = {
     getUserlist: asyncHandler(async (req, res) => {
         const listUsers = await UserService.getUserlist(req, res);
     }),
+    upDateRole: asyncHandler(async(res,req)=>{
+        const user = await UserService.updateRole(res,req);
+    }),
+    decreseRole: asyncHandler(async(res,req)=>{
+        const user = await UserService.decreseRole(res,req);
+    }),
+    blockUser: asyncHandler(async(res,req)=>{
+        const user = await UserService.blockUser(res,req);
+    }),
+    openUser: asyncHandler(async(res,req)=>{
+        const user = await UserService.openUser(res,req);
+    }),
+    changePassword: asyncHandler(async(res,req)=>{
+        const user = await UserService.changePassword(res,req);
+    }),
 
 
 };
