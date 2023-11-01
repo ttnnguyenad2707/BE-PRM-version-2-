@@ -41,17 +41,17 @@ module.exports.addMessage = async (req, res, next) => {
   }
 };
 
-// module.exports.getAllUsers = async (req, res, next) => {
-//   try {
-//     const users = await User.find({ _id: { $ne: req.params.id } })
-//     console.log("user contact: " + users);
-//     return res.json(users);
-//   } catch (ex) {
-//     next(ex);
-//   }
-// };
-
 module.exports.getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find({ _id: { $ne: req.params.id } })
+    // console.log("user contact: " + users);
+    return res.json(users);
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+module.exports.getContacts = async (req, res, next) => {
   try {
     const currentUser = req.params.id; // Sử dụng thông tin người dùng hiện tại từ req.params.id
 
