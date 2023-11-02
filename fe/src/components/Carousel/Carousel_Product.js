@@ -3,8 +3,7 @@ import React, { useRef } from 'react';
 import { Card } from 'antd';
 import Slider from "react-slick";
 import { useNavigate } from 'react-router-dom';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+
 import './Carousel_Product.scss';
 import { Link, NavLink } from 'react-router-dom';
 import {

@@ -1,76 +1,111 @@
-import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client';
-import axios from 'axios';
-import {createOne,getOne,updateOne} from '../../services/conversation.service'
 import { useNavigate, useOutletContext } from "react-router-dom";
-const socket = io('http://localhost:5001'); // Thay đổi URL tới địa chỉ của server của bạn
+import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
+import { io } from "socket.io-client";
+import styled from "styled-components";
+import { allContactsRoute, allUsersRoute, host } from "../../services/conversation.service";
+import ChatContainer from "../Chat/ChatContainer";
+import Contacts from "../Chat/Contacts";
+import Welcome from "../Chat/Welcome";
 
-const Chat = () => {
-  const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState('');
-  const [conversationId, setConversationId] = useState(''); // ID của cuộc trò chuyện
+export default function Chat() {
+
   const [user] = useOutletContext();
-  const user22="65300bc301afe25a77b24074"
+  // console.log("user: " + user?._id);
+  // const navigate = useNavigate();
+  const socket = useRef();
+  // const [contacts, setContacts] = useState([]);
+  const [currentChat, setCurrentChat] = useState(undefined);
+  const [currentUser, setCurrentUser] = useState(undefined);
+  const [allUser, setAllUser] = useState([]);
+
+
   useEffect(() => {
-    // Gửi yêu cầu để tạo hoặc lấy cuộc trò chuyện giữa hai người dùng
-    const fetchOrCreateConversation = async () => {
-      const data={
-        user1:user._id,
-        user2:user22
+    async function fetchData() {
+      try {
+        setCurrentUser(user);
+      } catch (error) {
+        console.log("loi lay user");
       }
-      createOne(data).then((res)=>{
-        setConversationId(res.data._id)
-      });
-    };
-    fetchOrCreateConversation();
-  }, []);
+    }
+    fetchData();
+  }, [user]);
 
   useEffect(() => {
-    // Gửi sự kiện 'join' để tham gia vào cuộc trò chuyện cụ thể khi component mount
-    socket.emit('join', conversationId);
-
-    // Lấy lịch sử tin nhắn giữa hai người dùng từ server
-    const fetchMessages = async () => {
-      const user1 = user._id; // Thay đổi tên người dùng nếu cần thiết
-      const user2 = user22; // Thay đổi tên người dùng nếu cần thiết
-      getOne(user1,user2).then((res)=>{
-        setMessages(res.data.messages)
-      })
-    };
-    fetchMessages();
-
-    // Lắng nghe sự kiện 'chat message' từ server
-    socket.on('chat message', (data) => {
-      setMessages(data.messages);
-    });
-  }, [conversationId]);
-
-  const sendMessage = async () => {
-    // Gửi tin nhắn tới server
-    var data={
-        text:message,
-        // sender:"653012298669bd5d3590bf47"
-        sender:user._id
+    async function fetchData() {
+      if (user) {
+        try {
+          const response = await axios.get(`${allUsersRoute}/${user?._id}`);
+          setAllUser(response.data);
+        } catch (error) {
+          console.log("Không thể lấy danh sách người dùng");
+        }
+      }
     }
-    updateOne(conversationId,data)
-    setMessage('');
+
+    fetchData();
+  }, [user]);
+
+  useEffect(() => {
+    const idu = localStorage.getItem('chatid');
+    const selectedUser = allUser.find((user) => user._id === idu);
+    if (selectedUser != undefined) {
+      localStorage.removeItem('chatid');
+      setCurrentChat(selectedUser);
+    }
+
+  }, [allUser]);
+
+  useEffect(() => {
+    if (currentUser) {
+      socket.current = io(host);
+      socket.current.emit("add-user", currentUser?._id);
+      // console.log("currentUserIO: " + currentUser?._id);
+    }
+  }, [currentUser]);
+
+
+  const handleChatChange = (chat) => {
+    setCurrentChat(chat);
+    // console.log("currentChat"+ currentChat);
   };
 
   return (
-    <div>
-      <div>
-        {messages.map((msg, index) => (
-          <div key={index}>
-            <p>{msg.text}</p>
-            <p>{msg.sender}</p>
-            <p>{msg.timestamp}</p>
-          </div>
-        ))}
-      </div>
-      <input value={message} onChange={(e) => setMessage(e.target.value)} />
-      <button onClick={sendMessage}>Send</button>
-    </div>
+    <>
+      <Container>
+        <div className="container" style={{ overflow: 'hidden' }}>
+          <Contacts changeChat={handleChatChange} />
+          {currentChat === undefined ? (
+            <Welcome />
+          ) : (
+            <ChatContainer currentChat={currentChat} socket={socket} />
+          )}
+        </div>
+      </Container>
+    </>
   );
-};
 
-export default Chat;
+}
+
+const Container = styled.div`
+
+  border-top: 5px solid #e66c4e;
+  height: 87vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  align-items: center;
+  background-color: #f7efe5;
+  .container {
+    height: 85vh;
+    width: 85vw;
+    background-color: #f7efe5;
+    display: grid;
+    grid-template-columns: 25% 75%;
+    @media screen and (min-width: 720px) and (max-width: 1080px) {
+      grid-template-columns: 35% 65%;
+    }
+  }
+`;

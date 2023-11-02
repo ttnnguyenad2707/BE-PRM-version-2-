@@ -1,21 +1,28 @@
-const { Server } = require('socket.io');
+const socket = require("socket.io");
 const { CLIENT_PORT } = process.env;
 
-const io = new Server({
+
+module.exports = (server) => {
+  const io = socket(server, {
     cors: {
-        origin: `http://localhost:${CLIENT_PORT}`,
+      origin: `http://localhost:${CLIENT_PORT}`,
+      credentials: true,
     },
-});
-
-io.on('connection', (socket) => {
-  console.log('a user connected');
-
-  socket.on('message', (data) => {
-    socket.emit('message', data);
   });
 
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
+  global.onlineUsers = new Map();
+  io.on("connection", (socket) => {
+    global.chatSocket = socket;
+
+    socket.on("add-user", (userId) => {
+      onlineUsers.set(userId, socket.id);
+    });
+
+    socket.on("send-msg", (data) => {
+      const sendUserSocket = onlineUsers.get(data.to);
+      if (sendUserSocket) {
+        socket.to(sendUserSocket).emit("msg-recieve", data.msg);
+      }
+    });
   });
-});
-module.exports = io;
+}
