@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react'
 import { getDetailPost, getPosterInfo } from '../../services/post.service'
 import moment from 'moment';
 import Map from '../Map/Map.component'
+import Slider from 'react-slick'
+import MapContainer from './MapContainer.component'
 
 const PostDetails = () => {
     const { slug } = useParams();
@@ -48,6 +50,13 @@ const PostDetails = () => {
         localStorage.setItem("chatid", posterInfo?._id)
         navigate('/chat');
     }
+    var settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1
+    };
     return (
         <>
             {isLoading == false && (
@@ -56,7 +65,15 @@ const PostDetails = () => {
                         <div className='col-8'>
                             <div className='post-content'>
                                 <div className='post-slide'>
-                                    <img src={images.postImageDefault} alt='post-image' width="100%" />
+                                    <Slider {...settings}>
+                                        {postDetail?.images?.map(image => (
+                                            <div style={{ height: '700px' }}>
+                                                <img src={image} alt='post-image' width="100%" height="100%" />
+                                            </div>
+                                        ))}
+                                    </Slider>
+
+
 
                                 </div>
                                 <div className='post-info'>
@@ -88,7 +105,8 @@ const PostDetails = () => {
                                     </div>
                                 </div>
                                 <div className='room-address'>
-                                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.7330253564114!2d105.51734237479548!3d21.00333628865218!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31365730731c760b%3A0x6b107bdf681c16ac!2sThi%C3%AAn%20Long%20Building!5e0!3m2!1svi!2s!4v1697290825634!5m2!1svi!2s" width="100%" height="450" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                    {/* <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.7330253564114!2d105.51734237479548!3d21.00333628865218!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31365730731c760b%3A0x6b107bdf681c16ac!2sThi%C3%AAn%20Long%20Building!5e0!3m2!1svi!2s!4v1697290825634!5m2!1svi!2s" width="100%" height="450" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> */}
+                                    <MapContainer address="Hưng Yên" />
                                 </div>
                                 <div className='post-comment'>
                                     <h4>Bình Luận or Đánh giá</h4>
