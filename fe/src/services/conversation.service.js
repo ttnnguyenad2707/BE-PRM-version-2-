@@ -1,13 +1,7 @@
-import axios from 'axios';
 import { URL_SERVER } from '../dataConfig';
 
-
-export const createOne = async (data) => {
-    return await axios.post(`${URL_SERVER}/conversation`, data)
-}
-export const getOne = async (user1,user2) => {
-    return await axios.get(`${URL_SERVER}/conversation/${user1}/${user2}`)
-}
-export const updateOne = async (conversationId,data) => {
-    return await axios.put(`${URL_SERVER}/conversation/${conversationId}/message`, data)
-}
+export const host = "http://localhost:5000";
+export const allUsersRoute = `${URL_SERVER}/conversation/allusers`;
+export const allContactsRoute = `${URL_SERVER}/conversation/allcontacts`;
+export const sendMessageRoute = `${URL_SERVER}/conversation/addmsg`;
+export const recieveMessageRoute = `${URL_SERVER}/conversation/getmsg`;

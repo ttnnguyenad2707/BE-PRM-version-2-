@@ -1,9 +1,9 @@
-const router = require('express').Router();
-const ConversationController=require("../controllers/conversation.controller")
-const {verifyToken,verifyTokenAdmin}=require("../middlewares/verifyToken.middleware");
+const { addMessage, getMessages, getAllUsers, getContacts } = require("../controllers/conversation.controller");
+const router = require("express").Router();
 
-router.post('/', ConversationController.createOne);
-router.get('/:user1/:user2',ConversationController.getOne)
-router.put('/:conversationId/message', ConversationController.updateOne);
+router.post("/addmsg/", addMessage);
+router.post("/getmsg/", getMessages);
+router.get("/allcontacts/:id", getContacts);
+router.get("/allusers/:id", getAllUsers);
 
 module.exports = router;
