@@ -8,7 +8,7 @@ router.get('/getlistusers/:currentPage',verifyTokenAdmin,UserController.getUserl
 router.put('/:id',verifyToken,validatePUT, UserController.updateOne);
 router.put('/role/:id',verifyTokenAdmin, UserController.updateOneForAdmin);
 router.put('/upRole/:id',verifyTokenAdmin, UserController.upDateRole);
-router.put('/decreseRole/:id',verifyTokenAdmin, UserController.upDateRole);
+router.put('/decreseRole/:id',verifyTokenAdmin, UserController.decreseRole);
 router.put('/blockUser/:id',verifyTokenAdmin, UserController.blockUser);
 router.put('/openUser/:id',verifyTokenAdmin, UserController.openUser);
 

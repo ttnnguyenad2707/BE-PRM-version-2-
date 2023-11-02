@@ -57,7 +57,6 @@ export const appRoutes = createBrowserRouter([
                 element: <PostEdit />
             },
             {
-
                 path: '/admin/post',
                 element: <Adminpage action={'post'} />
             },
