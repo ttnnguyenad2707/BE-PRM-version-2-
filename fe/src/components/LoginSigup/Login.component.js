@@ -19,8 +19,16 @@ const Login = () => {
 
         try {
             const res = await login(data.email, data.password,);
-            toast.success(`Chào mừng ${res.data.lastname}`)
-            nav("/");
+            if(res.data.status === true){
+                toast.success(`Chào mừng ${res.data.lastname}`)
+                if(res.data.admin === true){
+                    nav("/admin/post");
+                }else{
+                    nav("/");
+                }
+            }else{
+                toast.warning(`Tài khoản của bạn đã bị khóa`)
+            }
 
         } catch (error) {
             if (error.response && error.response.data && error.response.data.error) {

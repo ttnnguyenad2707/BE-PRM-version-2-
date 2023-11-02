@@ -3,6 +3,7 @@ import '../scss/Adminpage.scss';
 import Tablepost from "../components/Table_Admin/Tablepost.js";
 import Tableaccount from "../components/Table_Admin/Tableaccount.js";
 import Footer from "../components/Footer/Footer.js";
+import React, {useState,useEffect} from "react";
 const Adminpage = (props) => {
     const active = props.action;
     return (
