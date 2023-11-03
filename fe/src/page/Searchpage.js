@@ -2,7 +2,7 @@ import Footer from "../components/Footer/Footer.js";
 import Searchresult from "../components/Bodysearch/Bodysearch.js";
 import { useLocation,useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from "react";
-import { searchPost,getPostfilter,getAllPost,addPostfavourite,removePostfavourite } from "../services/post.service.js";
+import { searchPost,getPostfilter,getAllPost,addPostfavourite,removePostfavourite,getAll } from "../services/post.service.js";
 const SearchResultpage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [data, setData] = useState();

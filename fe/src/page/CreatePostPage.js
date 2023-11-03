@@ -12,27 +12,56 @@ import Checkbox from '@mui/material/Checkbox';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import { FormControlLabel } from '@mui/material';
 import { v4 as uuidv4 } from 'uuid';
 import Cookies from "js-cookie";
 import { createPost } from "../services/post.service";
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { AiOutlinePlus, AiFillDelete, AiFillEdit, AiOutlineLoading3Quarters } from 'react-icons/ai'
-
+import { getAllCategory } from "../services/category.service"
+import { getAllInterior } from "../services/interior.service"
+import { getAllSecurity } from "../services/security.service"
+import { getAllUtil } from "../services/util.service"
 
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 const CreatePostPage = () => {
     const token = Cookies.get('accessToken');
-    // console.log("token", token);
-    const [user] = useOutletContext();
-    // console.log("render", user);
-    const [isLoading, setIsLoading] = useState(true);
-
-    const [files, setFiles] = useState([]);
     const navigate = useNavigate();
+    const [user] = useOutletContext();
+    const [isLoading, setIsLoading] = useState(true);
+    const [files, setFiles] = useState([]);
+    const [districts, setDistricts] = useState([]); //quận huyện
+    const [provinces, setProvinces] = useState([]); // tỉnh thành phố
+    const [wards, setWards] = useState([]); //xa/phuong
+    const [category, setCategory] = useState([])
+    const [security, setSecurity] = useState([])
+    const [interior, setInterior] = useState([])
+    const [util, setUtil] = useState([])
+    const images = []
+    const [cate, setCate] = useState([]);
+
+    const handleChange = (event) => {
+        setCate(event.target.value);
+    };
+    useEffect(() => {
+        const fetchDataa = async () => {
+            try {
+                const categoryRes = await getAllCategory();
+                const interiorRes = await getAllInterior();
+                const securityRes = await getAllSecurity();
+                const utilRes = await getAllUtil();
+                setCategory(categoryRes.data);
+                setInterior(interiorRes.data);
+                setSecurity(securityRes.data);
+                setUtil(utilRes.data);
+            } catch (error) {
+                console.error('An error occurred while fetching data:', error);
+            }
+        }
+        fetchDataa();
+    }, [])
     const handleDrop = (acceptedFiles) => {
         setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
     };
@@ -47,8 +76,6 @@ const CreatePostPage = () => {
             setIsLoading(false);
         }
     }, [user]);
-    const images = []
-    // const [uploadedImages, setUploadedImages] = useState([]);
 
     const uploadToCloudinary = async () => {
         try {
@@ -66,8 +93,9 @@ const CreatePostPage = () => {
                 console.log('Upload success:', response.data.url);
                 // setImages(prevImages => [...prevImages, response.data.url]);
                 // setUploadedImages((prevImages) => [...prevImages, response.data.url]);
-                images.push(response.data.url)
-                console.log("images", images);
+                images.push({
+                    url: response.data.url
+                })
                 // TODO: Xử lý tệp đã tải lên trên Cloudinary
             }
         } catch (error) {
@@ -78,53 +106,6 @@ const CreatePostPage = () => {
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop: handleDrop, multiple: true });
 
-    ////////////////
-    const [districts, setDistricts] = useState([]); //quận huyện
-    const [provinces, setProvinces] = useState([]); // tỉnh thành phố
-    const [wards, setWards] = useState([]); //xa/phuong
-
-
-    const Category = [
-        { title: 'Nhà chung cư mini' },
-        { title: 'trọ chung chủ' },
-        { title: 'căn hộ cao cấp' },
-    ]
-    const Security = [
-        { title: 'Khóa vân tay' },
-        { title: 'chung chủ an ninh đảm bảo' },
-        { title: 'PCCC' },
-        { title: 'camera' },
-        { title: 'còi báo động' },
-        { title: 'thẻ ra vào' },
-
-
-
-    ]
-    const Interior = [
-        { title: 'Tủ lạnh' },
-        { title: 'Điều Hòa' },
-        { title: 'giường' },
-        { title: 'bàn học' },
-        { title: 'bếp' },
-        { title: 'bình nóng' },
-        { title: 'bàn' },
-        { title: 'wifi' },
-
-        { title: 'giường' },
-        { title: 'tủ quần áo' },
-
-    ]
-    const Utils = [
-        { title: 'máy giặt' },
-        { title: 'quán cà phê' },
-        { title: 'sân phơi' },
-        { title: 'Phòng tập gym' },
-        { title: 'hầm để xe' },
-
-
-
-    ]
-    // console.log("provinces", provinces);
 
     useEffect(() => {
 
@@ -171,7 +152,7 @@ const CreatePostPage = () => {
             setDistricts(districtList);
             setWards([]);// khi provinces thay đổi thì ward = ""
 
-          
+
 
         }
 
@@ -199,8 +180,8 @@ const CreatePostPage = () => {
 
 
     const handleSubmitForm = async (values) => {
- // cần phải validate lại để khi đủ format mới cho phép gửi. tạm thời bây giờ dù thông báo nhưng vẫn bị gửi xuống BE(và tả về lỗi axios)
-       await validateForm(values); // Kiểm tra hợp lệ
+        // cần phải validate lại để khi đủ format mới cho phép gửi. tạm thời bây giờ dù thông báo nhưng vẫn bị gửi xuống BE(và tả về lỗi axios)
+        await validateForm(values); // Kiểm tra hợp lệ
 
         const { district, ward, numberAddress, ...restValues } = values;  // Loại bỏ trường district,ward (useState) từ đối tượng values vì bị thừa, numberAddress ko can vi ko phai state
         const fullAddress = `${restValues.address}, ${values.district}, ${values.ward}, ${values.numberAddress}`;
@@ -216,21 +197,18 @@ const CreatePostPage = () => {
             owner: user._id
 
         }
-        console.log(data);
 
 
         try {
             const res = await createPost(data, token)
-            console.log("res from form", res);
-            toast.success(`Create success!`)
-             navigate("/stored/posted")
-
-            // const dataRespon = res?.data?.article
-            // navigate(`/article/${dataRespon.slug}`)
+            if (res.status === 200) {
+                toast.success(`Create success!`)
+                navigate("/stored/posted")
+            }
         } catch (error) {
-            console.log(error);
-            toast.danger(`Create fail!`)
-
+            if (error.response.status === 400) {
+                toast.info(error.response.data)
+            }
         }
     }
     const validateForm = (values) => {
@@ -241,7 +219,7 @@ const CreatePostPage = () => {
 
 
         }
-        else if (!values.category) {
+        else if (!values.categories) {
             toast.error(`category can not be blank.`)
 
         }
@@ -274,7 +252,7 @@ const CreatePostPage = () => {
                             title: '',
                             price: '',
                             description: '',
-                            category: '',
+                            categories: '',
                             address: '',
                             area: '',
                             maxPeople: 0,
@@ -283,7 +261,7 @@ const CreatePostPage = () => {
                             security: [
 
                             ],
-                            interior: [
+                            interiors: [
 
                             ],
                             utils: [
@@ -335,34 +313,42 @@ const CreatePostPage = () => {
                                         <Field className="form-control" name="title" as={TextField} label="Tiêu đề bài đăng" variant="outlined" />
                                     </div>
 
-                                <div className="my-2">
-                                    <Field className="form-control" name="description" as={TextareaAutosize} placeholder="Mô tả bài đăng" variant="outlined" row={4} style={{ height: '200px' }}/>
-                                </div>
-                                <div className="my-2">
-                                    <Field className="form-control" name="area" as={TextField} label="Diện tích" variant="outlined" />
-                                </div>
+                                    <div className="my-2">
+                                        <Field className="form-control" name="description" as={TextareaAutosize} placeholder="Mô tả bài đăng" variant="outlined" row={4} style={{ height: '200px' }} />
+                                    </div>
+                                    <div className="my-2">
+                                        <Field className="form-control" name="area" as={TextField} label="Diện tích" variant="outlined" />
+                                    </div>
 
 
 
                                     <div className="my-2">
-                                        <Field name="category" >
-                                            {({ field, form }) => (
-                                                <Autocomplete
-                                                    {...field}
-                                                    id="free-solo-demo"
-                                                    freeSolo
-                                                    options={Category.map((option) => option.title)}
-                                                    onChange={(event, newValue) => {
-                                                        form.setFieldValue('category', newValue); // Cập nhật giá trị vào đối tượng values
-                                                    }}
-                                                    onInputChange={(event, newInputValue) => {
-                                                        form.setFieldValue('category', newInputValue); // Cập nhật giá trị vào đối tượng values khi nhập tay
-                                                    }}
-                                                    renderInput={(params) => <TextField {...params} label="Category" />}
-                                                />
-                                            )}
-                                        </Field>
-
+                                        <div className="row">
+                                            <div > <Field name="categories"  >
+                                                {({ field, form }) => (
+                                                    <div>
+                                                        <InputLabel htmlFor="categories">Category</InputLabel>
+                                                        <Select
+                                                            {...field}
+                                                            id="categories"
+                                                            value={cate}
+                                                            onChange={(event) => {
+                                                                form.setFieldValue('categories', event.target.value);
+                                                                handleChange(event);
+                                                            }}
+                                                            style={{ width: "100%" }}
+                                                        >
+                                                            {category.map((option) => (
+                                                                <MenuItem key={option._id} value={option._id}>
+                                                                    {option.name}
+                                                                </MenuItem>
+                                                            ))}
+                                                        </Select>
+                                                    </div>
+                                                )}
+                                            </Field>
+                                            </div>
+                                        </div>
                                     </div>
                                     <h5>Địa chỉ</h5>
                                     <hr />
@@ -472,9 +458,9 @@ const CreatePostPage = () => {
                                                         id="checkboxes-tags-demo"
                                                         value={field.value.title} // nếu muốn lấy dưới dạng obj key : value thì là field.value
 
-                                                        options={Security}
+                                                        options={security}
                                                         disableCloseOnSelect
-                                                        getOptionLabel={(option) => option.title}
+                                                        getOptionLabel={(option) => option.name}
                                                         renderOption={(props, option, { selected }) => (
                                                             <li {...props}>
                                                                 <Checkbox
@@ -483,7 +469,7 @@ const CreatePostPage = () => {
                                                                     style={{ marginRight: 8 }}
                                                                     checked={selected}
                                                                 />
-                                                                {option.title}
+                                                                {option.name}
                                                             </li>
                                                         )}
                                                         style={{ width: 500 }}
@@ -491,7 +477,7 @@ const CreatePostPage = () => {
                                                             <TextField {...params} label="Security" placeholder="Security" />
                                                         )}
                                                         onChange={(event, values) => {
-                                                            const selectedValues = values.map(item => item.title);
+                                                            const selectedValues = values.map(item => item._id);
                                                             form.setFieldValue('security', selectedValues);
                                                             // form.setFieldValue('security', values); khi mà muốn lấy dưới dạng obj
 
@@ -502,16 +488,16 @@ const CreatePostPage = () => {
                                         </Field></div>
                                     </div>
                                     <div className="my-2">
-                                        <div className="col-3"> <Field name="interior">
+                                        <div className="col-3"> <Field name="interiors">
                                             {({ field, form }) => (
                                                 <div>
                                                     <Autocomplete
                                                         multiple
                                                         // id="checkboxes-tags-demo"
                                                         value={field.value.title} // nếu muốn lấy dưới dạng obj key : value thì là field.value
-                                                        options={Interior}
+                                                        options={interior}
                                                         disableCloseOnSelect
-                                                        getOptionLabel={(option) => option.title}
+                                                        getOptionLabel={(option) => option.name}
                                                         renderOption={(props, option, { selected }) => (
                                                             <li {...props}>
                                                                 <Checkbox
@@ -520,16 +506,16 @@ const CreatePostPage = () => {
                                                                     style={{ marginRight: 8 }}
                                                                     checked={selected}
                                                                 />
-                                                                {option.title}
+                                                                {option.name}
                                                             </li>
                                                         )}
                                                         style={{ width: 500 }}
                                                         renderInput={(params) => (
-                                                            <TextField {...params} label="Interior" placeholder="Interior" />
+                                                            <TextField {...params} label="Interiors" placeholder="Interiors" />
                                                         )}
                                                         onChange={(event, values) => {
-                                                            const selectedValues = values.map(item => item.title);
-                                                            form.setFieldValue('interior', selectedValues);
+                                                            const selectedValues = values.map(item => item._id);
+                                                            form.setFieldValue('interiors', selectedValues);
                                                             // form.setFieldValue('interior', values); khi mà muốn lấy dưới dạng obj
 
                                                         }}
@@ -547,9 +533,9 @@ const CreatePostPage = () => {
                                                         // id="checkboxes-tags-demo"
                                                         value={field.value.title} // nếu muốn lấy dưới dạng obj key : value thì là field.value thôi 
 
-                                                        options={Utils}
+                                                        options={util}
                                                         disableCloseOnSelect
-                                                        getOptionLabel={(option) => option.title}
+                                                        getOptionLabel={(option) => option.name}
                                                         renderOption={(props, option, { selected }) => (
                                                             <li {...props}>
                                                                 <Checkbox
@@ -558,7 +544,7 @@ const CreatePostPage = () => {
                                                                     style={{ marginRight: 8 }}
                                                                     checked={selected}
                                                                 />
-                                                                {option.title}
+                                                                {option.name}
                                                             </li>
                                                         )}
                                                         style={{ width: 500 }}
@@ -566,7 +552,7 @@ const CreatePostPage = () => {
                                                             <TextField {...params} label="Utils" placeholder="Utils" />
                                                         )}
                                                         onChange={(event, values) => {
-                                                            const selectedValues = values.map(item => item.title);
+                                                            const selectedValues = values.map(item => item._id);
                                                             form.setFieldValue('utils', selectedValues);
                                                             // form.setFieldValue('utils', values); khi mà muốn lấy dưới dạng obj 
 

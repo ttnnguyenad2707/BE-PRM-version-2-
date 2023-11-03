@@ -49,7 +49,7 @@ const CarouselProduct = ({ data }) => {
             <Slider {...settings}>
                 {dataSource?.map((post) => {
                     return (
-                        <div className='Card'>
+                        <div className='Card' key={post._id}>
                             <PostCard post={post}/>
                         </div>
                     );

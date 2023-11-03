@@ -64,8 +64,41 @@ export const updateroleServices = async (id) => {
 
 export const rollbackSevices = async (id) => {
     const token = Cookies.get('accessToken', 'hi');
-    console.log(token);
     return await axios.put(`${URL_SERVER}/user/decreseRole/${id}`,null,{
+        withCredentials: true,
+        headers: {
+            token: `Bearer ${token}`,
+        }
+    })
+}
+
+
+
+
+
+
+
+export const getUser = async (id) => {
+    const token = Cookies.get('accessToken');
+    return await axios.get(`${URL_SERVER}/user/${id}`,{
+        withCredentials: true,
+        headers: {
+            token: `Bearer ${token}`,
+        }
+    })
+}
+export const addFavorite = async (id) => {
+    const token = Cookies.get('accessToken');
+    return await axios.put(`${URL_SERVER}/user/favorites/${id}`,{
+        withCredentials: true,
+        headers: {
+            token: `Bearer ${token}`,
+        }
+    })
+}
+export const deleteOnInFavorites = async (id) => {
+    const token = Cookies.get('accessToken');
+    return await axios.put(`${URL_SERVER}/user/favorites/rm/${id}`,{
         withCredentials: true,
         headers: {
             token: `Bearer ${token}`,

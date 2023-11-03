@@ -11,7 +11,6 @@ import SearchResultpage from "../page/Searchpage.js";
 
 import Adminpage from "../page/Adminpage.js";
 import SignUp from "../components/LoginSigup/SignUp";
-import CreatePost from "../components/CreatePost/CreatePost.component";
 import CreatePostPage from "../page/CreatePostPage";
 import PostDetails from "../components/PostDetails/PostDetails.component";
 import Savepage from "../page/Savepage";
@@ -66,7 +65,6 @@ export const appRoutes = createBrowserRouter([
             },
             {
                 path: '/post/create',
-                // element: <CreatePost/>
                 element: <CreatePostPage/>
 
             },

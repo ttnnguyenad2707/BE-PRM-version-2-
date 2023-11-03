@@ -3,59 +3,80 @@ import '../../../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import images from '../../assets/images'
 import { GlobalOutlined, MessageOutlined, PhoneOutlined, LoadingOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
-import { getDetailPost, getPosterInfo } from '../../services/post.service'
+import { getOneBySlug } from '../../services/post.service'
+import { getUser } from "../../services/user.service"
 import moment from 'moment';
 import Map from '../Map/Map.component'
 import Slider from 'react-slick'
 import MapContainer from './MapContainer.component'
 
 const PostDetails = () => {
+    const navigate = useNavigate();
     const { slug } = useParams();
-    const [postDetail, setPostDetail] = useState({})
-
-    const [posterInfo, setPosterInfo] = useState({})
-    const [isLoading, setIsLoading] = useState(true)
-    useEffect(() => {
-        getDetailPost(slug).then(data => setPostDetail(data.data));
-
-    }, [])
-
+    const [postDetail, setPostDetail] = useState({});
+    const [user, setUser] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (Object.keys(postDetail).length > 0) {
-            getPosterInfo(postDetail.owner).then(data => {
-                setPosterInfo(data.data);
-                setIsLoading(false);
-                console.log("ok: ", data.data._id);
-            });
+        getDetail();
+    }, []);
+
+    useEffect(() => {
+        if (Object.keys(postDetail).length !== 0) {
+            setIsLoading(false);
         }
     }, [postDetail]);
 
-    useEffect(() => {
-        console.log("Poster Info:", posterInfo._id);
-    })
-
-    useEffect(() => {
-        if (postDetail != {}) {
-            setIsLoading(false);
-
+    const getDetail = async () => {
+        try {
+            const response = await getOneBySlug(slug);
+            if (response.status === 200) {
+                setPostDetail(response.data);
+                await getDetailUser(response.data.owner._id);
+            } else {
+                console.error('Failed to fetch');
+            }
+        } catch (error) {
+            console.error('An error occurred while fetching:', error);
         }
-    }, [postDetail])
-    const navigate = useNavigate();
+    };
+
+    const getDetailUser = async (owner) => {
+        try {
+            const response = await getUser(owner);
+            if (response.status === 200) {
+                setUser(response.data);
+            } else {
+                console.error('Failed to fetch');
+            }
+        } catch (error) {
+            console.error('An error occurred while fetching:', error);
+        }
+    };
+
     const handleLinkToProfile = (id) => {
         navigate(`/user/${id}`);
-    }
+    };
 
     const handleNavigateChat = () => {
-        localStorage.setItem("chatid", posterInfo?._id)
+        localStorage.setItem('chatid', postDetail.owner?._id);
         navigate('/chat');
-    }
-    var settings = {
+    };
+
+    const renderImages = () => {
+        return postDetail?.images?.map((image, index) => (
+            <div key={index} style={{ height: '700px' }}>
+                <img src={image.url} alt={`post-image-${index}`} width="100%" height="100%" />
+            </div>
+        ));
+    };
+
+    const settings = {
         dots: true,
         infinite: true,
         speed: 500,
         slidesToShow: 1,
-        slidesToScroll: 1
+        slidesToScroll: 1,
     };
     return (
         <>
@@ -68,7 +89,7 @@ const PostDetails = () => {
                                     <Slider {...settings}>
                                         {postDetail?.images?.map(image => (
                                             <div style={{ height: '700px' }}>
-                                                <img src={image} alt='post-image' width="100%" height="100%" />
+                                                <img src={image.url} alt='post-image' width="100%" height="100%" />
                                             </div>
                                         ))}
                                     </Slider>
@@ -89,12 +110,12 @@ const PostDetails = () => {
                                         <h4>Thông tin phòng trọ</h4>
                                         <div className='d-flex gap-3'>
                                             <ul>
-                                                <li>An ninh :{postDetail.security?.map(security => (<span>{security}, </span>))}</li>
-                                                <li>Nội thất:{postDetail.interior?.map(interior => (<span>{interior}, </span>))}</li>
+                                                <li>An ninh :{postDetail.security?.map(security => (<span>{security.name}, </span>))}</li>
+                                                <li>Nội thất:{postDetail.interior?.map(interior => (<span>{interior.name}, </span>))}</li>
 
                                             </ul>
                                             <ul>
-                                                <li>Tiện ích khác : {postDetail.utils?.map(utils => (<span>{utils}, </span>))}</li>
+                                                <li>Tiện ích khác : {postDetail.utils?.map(utils => (<span>{utils.name}, </span>))}</li>
                                                 <li>Tiền cọc : {postDetail.deposit} vnd</li>
                                                 <li>Số người tối đa : {postDetail.maxPeople} người</li>
                                             </ul>
@@ -105,8 +126,8 @@ const PostDetails = () => {
                                     </div>
                                 </div>
                                 <div className='room-address'>
-                                    {/* <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.7330253564114!2d105.51734237479548!3d21.00333628865218!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31365730731c760b%3A0x6b107bdf681c16ac!2sThi%C3%AAn%20Long%20Building!5e0!3m2!1svi!2s!4v1697290825634!5m2!1svi!2s" width="100%" height="450" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> */}
-                                    <MapContainer address="Hưng Yên" />
+                                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.7330253564114!2d105.51734237479548!3d21.00333628865218!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31365730731c760b%3A0x6b107bdf681c16ac!2sThi%C3%AAn%20Long%20Building!5e0!3m2!1svi!2s!4v1697290825634!5m2!1svi!2s" width="100%" height="450" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                    {/* <MapContainer address="Hưng Yên" /> */}
                                 </div>
                                 <div className='post-comment'>
                                     <h4>Bình Luận or Đánh giá</h4>
@@ -138,9 +159,9 @@ const PostDetails = () => {
                                 <div className='poster-box d-flex align-items-center'>
                                     <div className='d-flex gap-2'>
                                         <img src={images.avatarDefault} alt='avatar-poster' width="100%" />
-                                        <span>{posterInfo.firstname} {posterInfo.lastname}</span>
+                                        <span>{user.firstname} {user.lastname}</span>
                                     </div>
-                                    <button onClick={() => handleLinkToProfile(posterInfo._id)} className='btn bt-primary'>Xem trang cá nhân</button>
+                                    <button onClick={() => handleLinkToProfile(user._id)} className='btn bt-primary'>Xem trang cá nhân</button>
                                 </div>
                                 <div className='contact-box d-flex gap-4 flex-column'>
                                     <h4>Liên hệ với người cho thuê</h4>
@@ -150,7 +171,7 @@ const PostDetails = () => {
                                     </button>
                                     <a href='tel:0943895292' className='btn bt-primary w-100 p-3 d-flex gap-3 align-items-center rounded'>
                                         <PhoneOutlined />
-                                        Gọi 0943895292
+                                        Gọi {user.phone}
                                     </a>
 
                                 </div>

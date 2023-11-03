@@ -7,7 +7,7 @@ import { UserContext } from '../App';
 import React, { useContext, useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { checkUser } from '../services/auth.service';
-import { getAllPost, getAllPost_pagging, getPostedStore } from '../services/post.service.js';
+import { getAll, getAllPost_pagging, getPostedStore } from '../services/post.service.js';
 import { useNavigate, NavLink } from 'react-router-dom'
 import {LoadingOutlined} from '@ant-design/icons';
 const Landingpage = () => {
@@ -36,19 +36,31 @@ const Landingpage = () => {
     const onChange = (currentSlide) => {
         // console.log(currentSlide);
     };
+    // const getData = async () => {
+    //     try {
+    //         const posts = (await getAllPost(1)).data.data;
+    //         setData(posts);
+    //     } catch (error) {
+
+    //     }
+    // }
     const getData = async () => {
         try {
-            const posts = (await getAllPost(1)).data.data;
-            setData(posts);
+          const response = await getAll();
+          if (response.status === 200) {
+            setData(response.data.posts);
+          } else {
+            console.error('Failed to fetch products');
+          }
         } catch (error) {
-
+          console.error('An error occurred while fetching products:', error);
         }
-    }
+      };
     useEffect(() => {
         getData();
     }, []);
+      
 
-    console.log(data);
     return (
         <>
         {isLoading == true && (<><div className="unset-slick-dots-li-button-before">
