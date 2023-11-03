@@ -8,14 +8,41 @@ module.exports = {
     createOne: asyncHandler(async (req, res) => {
         const post = await PostService.createOne(req, res);
     }),
-    upload: asyncHandler(async (req, res) => {
-        const post = await PostService.upload(req, res);
-    }),
     getAll:asyncHandler(async (req, res) => {
         const post = await PostService.getAll(req, res);
     }),
+    getAllByOwner:asyncHandler(async (req, res) => {
+        const post = await PostService.getAllByOwner(req, res);
+    }),
+    getOne:asyncHandler(async (req, res) => {
+        const post = await PostService.getOne(req, res);
+    }),
+    getOneBySlug: asyncHandler(async (req, res) => {
+        const post = await PostService.getOneBySlug(req, res);
+    }),
     updateOne: asyncHandler(async (req, res) => {
         const post = await PostService.updateOne(req, res);
+    }),
+    getAllDeleted: asyncHandler(async (req, res) => {
+        const post = await PostService.getAllDeleted(req, res);
+    }),
+    deleteOne: asyncHandler(async (req, res) => {
+        const post = await PostService.deleteOne(req, res);
+    }),
+    destroyOne: asyncHandler(async (req, res) => {
+        const post = await PostService.destroyOne(req, res);
+    }),
+    restoreOne: asyncHandler(async (req, res) => {
+        const post = await PostService.restoreOne(req, res);
+    }),
+
+
+
+
+
+
+    upload: asyncHandler(async (req, res) => {
+        const post = await PostService.upload(req, res);
     }),
     getPosted: asyncHandler(async (req, res) => {
         const post = await PostService.getPosted(req, res);
@@ -38,9 +65,7 @@ module.exports = {
     getPostedById: asyncHandler(async (req, res) => {
         const post = await PostService.getPostedById(req, res);
     }),
-    getDetail: asyncHandler(async (req, res) => {
-        const post = await PostService.getDetail(req, res);
-    }),
+    
     getSearchValue: asyncHandler(async (req, res) => {
         const post = await PostService.getSearchValue(req, res);
     }),

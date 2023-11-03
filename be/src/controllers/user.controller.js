@@ -7,6 +7,16 @@ module.exports = {
     getOne: asyncHandler(async (req, res) => {
         const user = await UserService.getOne(req, res);
     }),
+
+    addOneFavorite: asyncHandler(async (req, res) => {
+        const user = await UserService.addOneFavorite(req, res);
+    }),
+    deleteOneInFavorite: asyncHandler(async (req, res) => {
+        const user = await UserService.deleteOneInFavorite(req, res);
+    }),
+
+
+
     updateOne: asyncHandler(async (req, res) => {
         const user = await UserService.updateOne(req, res);
     }),

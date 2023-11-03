@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { Schema } = require("mongoose");
 const User = new mongoose.Schema({
     firstname: {
         type: String,
@@ -23,21 +24,18 @@ const User = new mongoose.Schema({
         default: false,
     },
     isVip: {
-
         type: Boolean,
         default: false
     },
-    favoritePost: {
-        type: [String],
-    },
+    favorites: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
     status: {
         type: Boolean,
         default: true,
     },
-    refreshToken:{
-        type:String,
+    refreshToken: {
+        type: String,
     },
-    phone : {
+    phone: {
         type: Number,
         minlength: 10,
 

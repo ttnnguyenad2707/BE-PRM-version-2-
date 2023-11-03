@@ -7,51 +7,195 @@ class PostService {
 
 
     async createOne(req, res) {
-
-        // const {category,title,description,address,area,maxPeople,price,deposit,security,utils,interior,images}=req.body;
+        const { owner } = req.body;
+        const images = req.files.map(file => ({
+            url: `/public/images/${file.filename}`,
+            caption: `Caption for ${file.originalname}`,
+        }));
         try {
-            const result = await Post.create({ ...req.body });
+            const findUser = await User.findById({ _id: owner });
+            if (!findUser) return res.status(404).json("Not found User");
+            if (!findUser.isVip) {
+                const getAllPost = await Post.countDocuments({ owner: owner });
+                if (getAllPost >= 10) return res.status(500).json("Upgrade to VIP to post new articles");
+                const result = await Post.create({ images, ...req.body });
+                return res.status(200).json(result)
+            }
+            const result = await Post.create({ images, ...req.body });
             return res.status(200).json(result)
         } catch (error) {
             res.status(500).json({ error: error.toString() })
         }
     }
 
-    async updateOne(req, res) {
-        const postId = req.params.id; // Lấy id của bài viết cần cập nhật từ request
-      
-        try {
-          const result = await Post.findByIdAndUpdate(req.params.id, { ...req.body });
-           const updatedPostData = await Post.findById(req.params.id);
-          
-      
-          if (!result) {
-            // Nếu không tìm thấy bài viết với id tương ứng, trả về thông báo lỗi
-            return res.status(404).json({ error: 'Bài viết không tồn tại.' });
-          }
-      
-          return res.status(200).json(updatedPostData);
-        } catch (error) {
-          res.status(500).json({ error: error.toString() });
-        }
-      }
-
     async getAll(req, res) {
-        const dataSize = await Post.find({ deleted: false })
-        const currentPage = parseInt(req.params.currentPage);
-        const perPage = 10;
-        const totalPages = Math.ceil(dataSize.length/perPage);
-        const skip = (currentPage - 1) * perPage;
-        const result = await Post.find({ deleted: false })
-            .skip(skip)
-            .limit(perPage).exec();
+        let { page, search, address, area, minPrice, maxPrice, utils } = req.query;
+        const limit = 5;
 
-        const data = {
-            data: result,
-            totalPages: totalPages,
+        page = page ? parseInt(page) : 1;
+        search = search ? search : '';
+
+        const query = {};
+        if (search) {
+            query.title = { $regex: search, $options: 'i' };
         }
-        return res.status(200).json(data)
+        if (address) {
+            query.address = { $regex: address, $options: 'i' };
+        }
+        if (area) {
+            query.area = { $regex: area, $options: 'i' };
+        }
+        if (minPrice && maxPrice) {
+            query.price = { $gte: minPrice, $lte: maxPrice };
+        } else if (minPrice) {
+            query.price = { $gte: minPrice };
+        } else if (maxPrice) {
+            query.price = { $lte: maxPrice };
+        }
+        if (utils) {
+            query.utils = { $in: [utils] };
+        }
+
+        const options = {
+            page,
+            limit,
+        };
+
+        try {
+            const posts = await Post.find(query)
+                .populate('categories')
+                .populate('security')
+                .populate('utils')
+                .populate('interiors')
+                .skip((options.page - 1) * options.limit)
+                .limit(options.limit)
+                .sort({ createdAt: -1 })
+                .exec();
+
+            const count = await Post.countDocuments(query);
+            const totalPages = Math.ceil(count / options.limit);
+
+            const data = {
+                data: posts,
+                page: options.page,
+                totalPages: totalPages,
+                totalPosts: count,
+            };
+            return res.status(200).json(data);
+        } catch (error) {
+            return res.status(500).json({ message: 'Server Error' });
+        }
     }
+    async getAllByOwner(req, res) {
+        const { owner } = req.body;
+        try {
+            const results = await Post.find({ owner: owner, deleted: false })
+                .populate('categories')
+                .populate('security')
+                .populate('utils')
+                .populate('interiors')
+            return res.status(200).json(results);
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+    async getOne(req, res) {
+        const { id } = req.params;
+        const result = await Post.findById({ _id: id, deleted: false })
+            .populate('categories')
+            .populate('security')
+            .populate('utils')
+            .populate('interiors');
+        return res.status(200).json(result);
+    }
+    async getOneBySlug(req, res) {
+        const { slug } = req.params;
+        const result = await Post.findOne({ slug: slug, deleted: false })
+            .populate('categories')
+            .populate('security')
+            .populate('utils')
+            .populate('interiors');
+        return res.status(200).json(result);
+    }
+
+    async updateOne(req, res) {
+        const { id } = req.params;
+        const images = req.files.map(file => ({
+            url: `/public/images/${file.filename}`,
+            caption: `Caption for ${file.originalname}`,
+        }));
+        try {
+            const result = await Post.findByIdAndUpdate(id, { images, ...req.body });
+            if (!result) {
+                return res.status(404).json({ error: 'Bài viết không tồn tại.' });
+            }
+
+            return res.status(200).json("Update successfully");
+        } catch (error) {
+            res.status(500).json({ error: error.toString() });
+        }
+    }
+
+    async deleteOne(req, res) {
+        const { id } = req.params;
+        try {
+            const result = await Post.findByIdAndUpdate(id, { deleted: true });
+            return res.status(200).json("Delete successfully")
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+    async getAllDeleted(req, res) {
+        const { owner } = req.body;
+        try {
+            const results = await Post.find({ owner: owner, deleted: true })
+                .populate('categories')
+                .populate('security')
+                .populate('utils')
+                .populate('interiors');
+            return res.status(200).json(results)
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+
+    async destroyOne(req, res) {
+        const { id } = req.params;
+        try {
+            const result = await Post.findByIdAndDelete(id);
+            return res.status(200).json("Delete successfully")
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+    async restoreOne(req, res) {
+        const { id } = req.params;
+        try {
+            const result = await Post.findByIdAndUpdate(id, { deleted: false })
+            return res.status(200).json("Restore successfully")
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+    
+//////////////////////////////////////////////////////////////
+
+    // async getAll(req, res) {
+    //     const dataSize = await Post.find({ deleted: false })
+    //     const currentPage = parseInt(req.params.currentPage);
+    //     const perPage = 10;
+    //     const totalPages = Math.ceil(dataSize.length / perPage);
+    //     const skip = (currentPage - 1) * perPage;
+    //     const result = await Post.find({ deleted: false })
+    //         .skip(skip)
+    //         .limit(perPage).exec();
+
+    //     const data = {
+    //         data: result,
+    //         totalPages: totalPages,
+    //     }
+    //     return res.status(200).json(data)
+    // }
     async readPostWithQuantity(req, res) {
         const quantityOfPost = await req.query.number;
         const result = await Post.find({}).limit(quantityOfPost);
@@ -86,14 +230,14 @@ class PostService {
 
     async getSearchValue(req, res) {
         const searchParam = req.params.searchParam;
-        const dataSize  = await Post.find({ title: { $regex: searchParam, $options: 'i' } })
+        const dataSize = await Post.find({ title: { $regex: searchParam, $options: 'i' } })
         const currentPage = parseInt(req.params.currentPage);
         const perPage = 10;
-        const totalPages = Math.ceil(dataSize.length/perPage);
+        const totalPages = Math.ceil(dataSize.length / perPage);
         try {
             const skip = (currentPage - 1) * perPage;
 
-            const result = await Post.find({ title: { $regex: searchParam, $options: 'i' ,deleted: false} })
+            const result = await Post.find({ title: { $regex: searchParam, $options: 'i', deleted: false } })
                 .skip(skip)
                 .limit(perPage)
                 .exec();
@@ -240,16 +384,16 @@ class PostService {
             return res.status(500).json(error.message);
         }
     }
-    async sortByCreateDate(req,res){
+    async sortByCreateDate(req, res) {
         try {
             const dataSize = await Post.find({ deleted: false })
             const currentPage = parseInt(req.params.currentPage);
             const perPage = 10;
-            const totalPages = Math.ceil(dataSize.length/perPage);
+            const totalPages = Math.ceil(dataSize.length / perPage);
             const skip = (currentPage - 1) * perPage;
-            const result = await Post.find().sort({ createdAt: -1,deleted: false })
-            .skip(skip)
-            .limit(perPage).exec();
+            const result = await Post.find().sort({ createdAt: -1, deleted: false })
+                .skip(skip)
+                .limit(perPage).exec();
             return res.status(200).json({
                 message: "get sorted by createDate post success",
                 data: result,
@@ -259,16 +403,16 @@ class PostService {
             return res.status(500).json({ error: error.toString() });
         }
     }
-    async sortByPrice(req,res){
+    async sortByPrice(req, res) {
         try {
             const dataSize = await Post.find({ deleted: false })
             const currentPage = parseInt(req.params.currentPage);
             const perPage = 10;
-            const totalPages = Math.ceil(dataSize.length/perPage);
+            const totalPages = Math.ceil(dataSize.length / perPage);
             const skip = (currentPage - 1) * perPage;
-            const result = await Post.find().sort({ price: -1 , deleted: false})
-            .skip(skip)
-            .limit(perPage).exec();
+            const result = await Post.find().sort({ price: -1, deleted: false })
+                .skip(skip)
+                .limit(perPage).exec();
             return res.status(200).json({
                 message: "get sorted post by price success",
                 data: result,

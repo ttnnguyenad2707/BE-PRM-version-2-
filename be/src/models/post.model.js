@@ -1,11 +1,19 @@
 const mongoose = require("mongoose");
+const { Schema } = require("mongoose");
 const slugify = require('slugify');
 
+const Images = new mongoose.Schema({
+  url: {
+    type: String,
+    required: true,
+  },
+  caption: {
+    type: String,
+    required: true,
+  }
+});
 
 const Post = new mongoose.Schema({
-  category: {
-    type: String,
-  },
   title: {
     type: String,
   },
@@ -32,15 +40,11 @@ const Post = new mongoose.Schema({
   deposit: {
     type: Number,
   },
-  security: {
-    type: [String],
-  },
-  utils: {
-    type: [String],
-  },
-  interior: {
-    type: [String],
-  },
+  images: [Images],
+  categories: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
+  security: [{ type: Schema.Types.ObjectId, ref: 'Security' }],
+  utils: [{ type: Schema.Types.ObjectId, ref: 'Utils' }],
+  interiors: [{ type: Schema.Types.ObjectId, ref: 'Interior' }],
   slug: {
     type: String, unique: true
   },
@@ -52,14 +56,7 @@ const Post = new mongoose.Schema({
     type: Date,
     default: null,
   },
-  images: {
-    type: [String],
-  }, 
-  owner: {
-    type: String,
-    required: true,
-  }
-
+  owner: { type: Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });
 
 

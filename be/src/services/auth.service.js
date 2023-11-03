@@ -64,7 +64,7 @@ class AuthService {
                 const genAccessToken = await this.genAccessToken(findUser);
                 const genRefreshToken = await this.genRefreshToken(findUser);
 
-                const a = res.cookie("accessToken", genAccessToken, {
+                res.cookie("accessToken", genAccessToken, {
                     httpOnly: false,
                     secure: false,
                     path: "/",

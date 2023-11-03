@@ -4,6 +4,12 @@ const {validatePUT, validatePUTChangePassword}=require('../validations/user.vali
 const {verifyToken,verifyTokenAdmin}=require("../middlewares/verifyToken.middleware");
 
 router.get('/:userId',UserController.getOne)
+router.put('/favorites/:id', verifyToken, UserController.addOneFavorite);
+router.put('/favorites/rm/:id', verifyToken, UserController.deleteOneInFavorite);
+
+
+
+
 router.get('/getlistusers/:currentPage',verifyTokenAdmin,UserController.getUserlist);
 router.put('/:id',verifyToken,validatePUT, UserController.updateOne);
 router.put('/role/:id',verifyTokenAdmin, UserController.updateOneForAdmin);

@@ -1,15 +1,46 @@
 // @ts-ignore
 const User = require('../models/user.model')
 const bcrypt = require('bcrypt');
+const jwt = require("jsonwebtoken");
+const { ACCESS_KEY } = process.env;
 
 class UserService {
     async getOne(req, res) {
+        const { userId } = req.params;
+        const token = req.headers.token;
         try {
-            const { userId } = req.params;
+            const accessToken = token.split(" ")[1];
+            const user = jwt.verify(accessToken, ACCESS_KEY);
+            if (userId === user.id) {
+                const result = await User.findById(userId)
+                    .populate('favorites');
+                return res.status(200).json(result);
+            }
             const result = await User.findById(userId);
-            return res.status(200).json(result)
+            return res.status(200).json(result);
         } catch (error) {
             return res.status(500).json({ "error": error.message });
+        }
+    }
+    async addOneFavorite(req, res) {
+        const { id } = req.params;
+        const { owner } = req.body;
+        try {
+            const result = await User.findByIdAndUpdate(owner, { $push: { favorites: id } })
+            return res.status(200).json("Add successfully")
+
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+    async deleteOneInFavorite(req, res) {
+        const { id } = req.params;
+        const { owner } = req.body;
+        try {
+            const result = await User.findByIdAndUpdate(owner, { $pull: { favorites: id } })
+            return res.status(200).json("Removed successfully")
+        } catch (error) {
+            return res.status(500).json(error.message)
         }
     }
 
@@ -145,7 +176,7 @@ class UserService {
                 })
         } catch (error) {
             return res.status(502).json({ "error": error.message });
-            
+
         }
     }
 }
