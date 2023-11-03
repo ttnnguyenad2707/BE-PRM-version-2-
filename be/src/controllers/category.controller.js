@@ -6,5 +6,8 @@ module.exports = {
     createOne: asyncHandler(async (req, res) => {
         const post = await CategoryService.createOne(req, res);
     }),
+    getAll: asyncHandler(async (req, res) => {
+        const post = await CategoryService.getAll(req, res);
+    }),
 
 };

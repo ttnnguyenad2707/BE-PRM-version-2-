@@ -7,5 +7,8 @@ module.exports = {
     createOne: asyncHandler(async (req, res) => {
         const post = await InteriorService.createOne(req, res);
     }),
+    getAll: asyncHandler(async (req, res) => {
+        const post = await InteriorService.getAll(req, res);
+    }),
 
 };

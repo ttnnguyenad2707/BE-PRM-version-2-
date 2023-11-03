@@ -8,24 +8,16 @@ class PostService {
 
     async createOne(req, res) {
         const { owner } = req.body;
-        const images = req.files.map(file => ({
-            url: `/public/images/${file.filename}`,
-            caption: `Caption for ${file.originalname}`,
-        }));
-        try {
-            const findUser = await User.findById({ _id: owner });
-            if (!findUser) return res.status(404).json("Not found User");
-            if (!findUser.isVip) {
-                const getAllPost = await Post.countDocuments({ owner: owner });
-                if (getAllPost >= 10) return res.status(500).json("Upgrade to VIP to post new articles");
-                const result = await Post.create({ images, ...req.body });
-                return res.status(200).json(result)
-            }
-            const result = await Post.create({ images, ...req.body });
+        const findUser = await User.findById({ _id: owner });
+        if (!findUser) return res.status(404).json("Not found User");
+        if (!findUser.isVip) {
+            const getAllPost = await Post.countDocuments({ owner: owner });
+            if (getAllPost >= 10) return res.status(400).json("Upgrade to VIP to post new articles");
+            const result = await Post.create({ ...req.body });
             return res.status(200).json(result)
-        } catch (error) {
-            res.status(500).json({ error: error.toString() })
         }
+        const result = await Post.create({ ...req.body });
+        return res.status(200).json(result)
     }
 
     async getAll(req, res) {
@@ -62,7 +54,7 @@ class PostService {
         };
 
         try {
-            const posts = await Post.find(query)
+            const posts = await Post.find(query,{deleted:false})
                 .populate('categories')
                 .populate('security')
                 .populate('utils')
@@ -76,7 +68,7 @@ class PostService {
             const totalPages = Math.ceil(count / options.limit);
 
             const data = {
-                data: posts,
+                posts,
                 page: options.page,
                 totalPages: totalPages,
                 totalPosts: count,
@@ -87,14 +79,17 @@ class PostService {
         }
     }
     async getAllByOwner(req, res) {
-        const { owner } = req.body;
+        const { owner } = req.params;
         try {
             const results = await Post.find({ owner: owner, deleted: false })
                 .populate('categories')
                 .populate('security')
                 .populate('utils')
                 .populate('interiors')
-            return res.status(200).json(results);
+                .populate('owner');
+            const countPost=await Post.countDocuments({owner:owner});
+
+            return res.status(200).json({results,countPost});
         } catch (error) {
             return res.status(500).json(error.message)
         }
@@ -105,7 +100,8 @@ class PostService {
             .populate('categories')
             .populate('security')
             .populate('utils')
-            .populate('interiors');
+            .populate('interiors')
+            .populate('owner');
         return res.status(200).json(result);
     }
     async getOneBySlug(req, res) {
@@ -114,7 +110,8 @@ class PostService {
             .populate('categories')
             .populate('security')
             .populate('utils')
-            .populate('interiors');
+            .populate('interiors')
+            .populate('owner');
         return res.status(200).json(result);
     }
 
@@ -146,13 +143,14 @@ class PostService {
         }
     }
     async getAllDeleted(req, res) {
-        const { owner } = req.body;
+        const { owner } = req.params;
         try {
             const results = await Post.find({ owner: owner, deleted: true })
                 .populate('categories')
                 .populate('security')
                 .populate('utils')
-                .populate('interiors');
+                .populate('interiors')
+                .populate('owner');
             return res.status(200).json(results)
         } catch (error) {
             return res.status(500).json(error.message)
@@ -177,8 +175,8 @@ class PostService {
             return res.status(500).json(error.message)
         }
     }
-    
-//////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////
 
     // async getAll(req, res) {
     //     const dataSize = await Post.find({ deleted: false })

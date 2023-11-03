@@ -7,10 +7,6 @@ const Images = new mongoose.Schema({
     type: String,
     required: true,
   },
-  caption: {
-    type: String,
-    required: true,
-  }
 });
 
 const Post = new mongoose.Schema({
@@ -41,7 +37,7 @@ const Post = new mongoose.Schema({
     type: Number,
   },
   images: [Images],
-  categories: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
+  categories: { type: Schema.Types.ObjectId, ref: 'Category' },
   security: [{ type: Schema.Types.ObjectId, ref: 'Security' }],
   utils: [{ type: Schema.Types.ObjectId, ref: 'Utils' }],
   interiors: [{ type: Schema.Types.ObjectId, ref: 'Interior' }],

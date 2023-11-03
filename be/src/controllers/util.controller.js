@@ -7,5 +7,8 @@ module.exports = {
     createOne: asyncHandler(async (req, res) => {
         const post = await UtilService.createOne(req, res);
     }),
+    getAll: asyncHandler(async (req, res) => {
+        const post = await UtilService.getAll(req, res);
+    }),
 
 };

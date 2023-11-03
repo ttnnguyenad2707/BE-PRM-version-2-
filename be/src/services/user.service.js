@@ -14,10 +14,12 @@ class UserService {
             if (userId === user.id) {
                 const result = await User.findById(userId)
                     .populate('favorites');
-                return res.status(200).json(result);
+                const { password, refreshToken, admin, ...other } = result._doc;
+                return res.status(200).json({ ...other });
             }
             const result = await User.findById(userId);
-            return res.status(200).json(result);
+            const { password, refreshToken, admin, ...other } = result;
+            return res.status(200).json({ ...other });
         } catch (error) {
             return res.status(500).json({ "error": error.message });
         }

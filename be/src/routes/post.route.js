@@ -2,7 +2,6 @@ const router = require('express').Router();
 const PostController = require("../controllers/post.controller")
 const { validatePOST, validatePUT } = require('../validations/post.validate');
 const { verifyToken, } = require("../middlewares/verifyToken.middleware");
-const { uploadEvidence } = require("../uploads/images")
 
 // const multer = require('multer');
 // const storage = multer.memoryStorage();
@@ -13,13 +12,13 @@ const { uploadEvidence } = require("../uploads/images")
 router.get('/:id', verifyToken, PostController.getOne);
 router.get('/', PostController.getAll);
 router.get('/owner/:owner', PostController.getAllByOwner);
-router.post('/', verifyToken, uploadEvidence.array('images[]'), PostController.createOne);
-router.put('/:id', verifyToken, uploadEvidence.array('images[]'), PostController.updateOne);
-router.get('/:slug', PostController.getOneBySlug);
+router.post('/', verifyToken, PostController.createOne);
+router.put('/:id', verifyToken, PostController.updateOne);
+router.get('/slug/:slug',verifyToken, PostController.getOneBySlug);
 router.get('/deleted/:owner', verifyToken,PostController.getAllDeleted);
 router.delete('/:id', verifyToken, PostController.deleteOne);
 router.delete('/destroy/:id', verifyToken, PostController.destroyOne)
-router.post('/rs/:id', verifyToken, PostController.restoreOne);
+router.put('/rs/:id', verifyToken, PostController.restoreOne);
 
 
 

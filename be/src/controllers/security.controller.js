@@ -7,5 +7,8 @@ module.exports = {
     createOne: asyncHandler(async (req, res) => {
         const post = await SecurityService.createOne(req, res);
     }),
+    getAll: asyncHandler(async (req, res) => {
+        const post = await SecurityService.getAll(req, res);
+    }),
 
 };

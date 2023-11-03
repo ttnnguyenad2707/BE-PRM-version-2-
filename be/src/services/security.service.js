@@ -13,6 +13,14 @@ class SecurityService {
             res.status(500).json({ error: error.toString() })
         }
     }
+    async getAll(req, res) {
+        try {
+            const result = await Security.find();
+            return res.status(200).json(result)
+        } catch (error) {
+            res.status(500).json({ error: error.toString() })
+        }
+    }
 
 }
 
