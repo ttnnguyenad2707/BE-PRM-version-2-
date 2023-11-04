@@ -14,6 +14,7 @@ import { TiArrowUpOutline } from 'react-icons/ti';
 const Profile = () => {
     // console.log(images.avatarDefault);
     const [user, setUser] = useOutletContext();
+    const [avatar, setAvatar] = useState();
 
 
     // console.log("render", user);
@@ -58,6 +59,33 @@ const Profile = () => {
         }
         // console.log("values", values);
 
+    }
+
+    const uploadToCloudinary = async (file) => {
+        try {
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('folder', "RoomRadar");
+            formData.append('upload_preset', 'roomRadarPreset');
+            const response = await axios.post(
+                `https://api.cloudinary.com/v1_1/dmoge1fpo/upload`,
+                formData
+            );
+            console.log(response);
+
+            setAvatar(response.data.url);
+        } catch (error) {
+            console.error('Upload error:', error);
+        }
+    };
+
+    const handleUploadAvatar = (e) => {
+        const file = e.target.files[0];
+        console.log(file);
+        if (file) {
+            uploadToCloudinary(file);
+        }
     }
 
     return (
@@ -105,10 +133,12 @@ const Profile = () => {
                                                     <div className='avatar d-flex align-items-center gap-5 mb-4'>
                                                         <img src={images.avatarDefault} alt='avatar default' />
                                                         <div className='btn-upload'>
-                                                            <label htmlFor='uploadAvatar'>
-                                                                <div className='btn btn-bg-primary text-white btn-radius'>Upload file</div>
-                                                            </label>
-                                                            <input type='file' id='uploadAvatar' hidden />
+                                                            <form >
+                                                                <input type='file' id='uploadAvatar' onClick={handleUploadAvatar} />
+                                                                <label htmlFor='uploadAvatar'>
+                                                                    <div class='btn btn-bg-primary text-white btn-radius'>Upload file</div>
+                                                                </label>
+                                                            </form>
                                                         </div>
                                                         <div className='btn btn-bg-danger text-white btn-radius'>Remove</div>
                                                     </div>
